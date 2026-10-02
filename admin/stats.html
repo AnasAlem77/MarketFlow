@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Statistik - Market Flow</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+
+<body class="admin-body">
+
+    <!-- =========================
+         ADMIN HEADER
+    ========================== -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+
+            <div class="admin-brand">
+                <img
+                    src="../assets/images/logo.svg"
+                    alt="Market Flow"
+                    class="admin-logo-small"
+                >
+                <span>Admin Flow</span>
+            </div>
+
+            <div class="admin-user">
+                <span id="adminUsername">admin</span>
+
+                <button
+                    type="button"
+                    onclick="logout()"
+                    class="btn-logout"
+                >
+                    Logout
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- =========================
+         ADMIN LAYOUT
+    ========================== -->
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+
+            <nav class="admin-nav">
+
+                <a href="dashboard.html">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+
+                
+            <!-- Language Switcher -->
+            <div class="language-toggle" role="group" aria-label="Language selection">
+                <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
+                <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
+            </div>
+<a href="products.html">
+                    <span class="nav-icon">📦</span>
+                    Produk
+                </a>
+
+                <a href="category.html">
+                    <span class="nav-icon">📁</span>
+                    Kategori
+                </a>
+
+                <a href="stats.html" class="active">
+                    <span class="nav-icon">📈</span>
+                    Statistik
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN CONTENT
+        ========================== -->
+        <main class="admin-main">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+
+                <h1>Statistik</h1>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="resetStats()"
+                >
+                    🔄 Reset Statistik
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 STAT CARDS
+            ========================== -->
+            <div class="stats-grid">
+
+                <!-- VIEWS -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        👁️
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Total Views
+                        </h3>
+
+                        <p id="totalViews">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CLICKS -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🖱️
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Total Clicks
+                        </h3>
+
+                        <p id="totalClicks">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PRODUCTS -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        📦
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Total Produk
+                        </h3>
+
+                        <p id="totalProducts">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORIES -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        📁
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Total Kategori
+                        </h3>
+
+                        <p id="totalCategories">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 TOP PRODUCTS
+            ========================== -->
+            <div class="stats-section">
+
+                <h2>
+                    🏆 Produk Terpopuler
+                </h2>
+
+                <div class="table-responsive">
+
+                    <table class="admin-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Rank</th>
+                                <th>Produk</th>
+                                <th>Views</th>
+                                <th>Clicks</th>
+                                <th>CTR</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="topProductsTable">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 RECENT ACTIVITY
+            ========================== -->
+            <div class="stats-section">
+
+                <h2>
+                    📅 Aktivitas Terbaru
+                </h2>
+
+                <div
+                    id="recentActivity"
+                    class="activity-list"
+                >
+                    <!-- Loaded dynamically -->
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 7 DAY CHART
+            ========================== -->
+            <div class="stats-section">
+
+                <h2>
+                    📊 Grafik 7 Hari Terakhir
+                </h2>
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="statsChart"
+                        aria-label="Grafik statistik 7 hari terakhir"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================
+         ADMIN JS
+    ========================== -->
+    <script src="../assets/js/language.js"></script>
+    <script src="../assets/js/admin.js"></script>
+
+
+    <script>
+        /* =====================================================
+           MARKET FLOW - STATISTICS
+        ===================================================== */
+
+
+        // -----------------------------------------------------
+        // AUTH CHECK
+        // -----------------------------------------------------
+
+        if (
+            sessionStorage.getItem('admin_logged_in') !== 'true'
+        ) {
+            window.location.href = 'login.html';
+        }
+
+
+        // -----------------------------------------------------
+        // DOM READY
+        // -----------------------------------------------------
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+                loadStats();
+
+            }
+        );
+
+
+        // -----------------------------------------------------
+        // LOGOUT
+        // -----------------------------------------------------
+
+        function logout() {
+
+            sessionStorage.clear();
+
+            window.location.href = 'login.html';
+
+        }
+
+
+        // -----------------------------------------------------
+        // SAFE LOCAL STORAGE
+        // -----------------------------------------------------
+
+        function readLocalStorage(
+            key,
+            fallback = []
+        ) {
+
+            try {
+
+                const value =
+                    localStorage.getItem(key);
+
+                if (!value) {
+                    return fallback;
+                }
+
+                const parsed =
+                    JSON.parse(value);
+
+                return Array.isArray(parsed)
+                    ? parsed
+                    : fallback;
+
+            } catch (error) {
+
+                console.error(
+                    `Failed to read ${key}:`,
+                    error
+                );
+
+                return fallback;
+
+            }
+
+        }
+
+
+        // -----------------------------------------------------
+        // ESCAPE HTML
+        // -----------------------------------------------------
+
+        function escapeHtml(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return '';
+            }
+
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+        }
+
+
+        // -----------------------------------------------------
+        // LOAD ALL STATISTICS
+        // -----------------------------------------------------
+
+        function loadStats() {
+
+            const products =
+                readLocalStorage(
+                    'products',
+                    []
+                );
+
+            const categories =
+                readLocalStorage(
+                    'categories',
+                    []
+                );
+
+            const activities =
+                readLocalStorage(
+                    'activities',
+                    []
+                );
+
+
+            // ---------------------------------------------
+            // TOTALS
+            // ---------------------------------------------
+
+            const totalViews =
+                products.reduce(
+                    function (sum, product) {
+
+                        return sum +
+                            getNumber(
+                                product.views
+                            );
+
+                    },
+                    0
+                );
+
+
+            const totalClicks =
+                products.reduce(
+                    function (sum, product) {
+
+                        return sum +
+                            getNumber(
+                                product.clicks
+                            );
+
+                    },
+                    0
+                );
+
+
+            setText(
+                'totalViews',
+                totalViews.toLocaleString('id-ID')
+            );
+
+
+            setText(
+                'totalClicks',
+                totalClicks.toLocaleString('id-ID')
+            );
+
+
+            setText(
+                'totalProducts',
+                products.length.toLocaleString('id-ID')
+            );
+
+
+            setText(
+                'totalCategories',
+                categories.length.toLocaleString('id-ID')
+            );
+
+
+            // ---------------------------------------------
+            // TOP PRODUCTS
+            // ---------------------------------------------
+
+            renderTopProducts(products);
+
+
+            // ---------------------------------------------
+            // RECENT ACTIVITY
+            // ---------------------------------------------
+
+            renderRecentActivity(
+                activities
+            );
+
+
+            // ---------------------------------------------
+            // CHART
+            // ---------------------------------------------
+
+            drawChart(activities);
+
+        }
+
+
+        // -----------------------------------------------------
+        // NUMBER NORMALIZER
+        // -----------------------------------------------------
+
+        function getNumber(value) {
+
+            const number =
+                Number(value);
+
+            if (
+                !Number.isFinite(number) ||
+                number < 0
+            ) {
+                return 0;
+            }
+
+            return number;
+
+        }
+
+
+        // -----------------------------------------------------
+        // SET TEXT
+        // -----------------------------------------------------
+
+        function setText(
+            id,
+            value
+        ) {
+
+            const element =
+                document.getElementById(id);
+
+            if (element) {
+                element.textContent = value;
+            }
+
+        }
+
+
+        // -----------------------------------------------------
+        // TOP PRODUCTS
+        // -----------------------------------------------------
+
+        function renderTopProducts(
+            products
+        ) {
+
+            const tbody =
+                document.getElementById(
+                    'topProductsTable'
+                );
+
+
+            if (!tbody) {
+                return;
+            }
+
+
+            tbody.innerHTML = '';
+
+
+            const topProducts =
+                [...products]
+                    .sort(
+                        function (a, b) {
+
+                            const viewsA =
+                                getNumber(a.views);
+
+                            const viewsB =
+                                getNumber(b.views);
+
+                            if (
+                                viewsA !==
+                                viewsB
+                            ) {
+                                return viewsB -
+                                    viewsA;
+                            }
+
+
+                            return getNumber(
+                                b.clicks
+                            ) -
+                            getNumber(
+                                a.clicks
+                            );
+
+                        }
+                    )
+                    .slice(0, 10);
+
+
+            // EMPTY
+            if (
+                topProducts.length === 0
+            ) {
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="5"
+                            style="
+                                text-align: center;
+                                padding: 40px;
+                            "
+                        >
+                            Belum ada data.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+
+            }
+
+
+            // ROWS
+            topProducts.forEach(
+                function (
+                    product,
+                    index
+                ) {
+
+                    const views =
+                        getNumber(
+                            product.views
+                        );
+
+                    const clicks =
+                        getNumber(
+                            product.clicks
+                        );
+
+
+                    const ctr =
+                        views > 0
+                            ? (
+                                clicks /
+                                views *
+                                100
+                            ).toFixed(1)
+                            : '0.0';
+
+
+                    const row =
+                        document.createElement(
+                            'tr'
+                        );
+
+
+                    row.innerHTML = `
+
+                        <td>
+                            ${index + 1}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                product.name ||
+                                'Tanpa Nama'
+                            )}
+                        </td>
+
+                        <td>
+                            ${views.toLocaleString(
+                                'id-ID'
+                            )}
+                        </td>
+
+                        <td>
+                            ${clicks.toLocaleString(
+                                'id-ID'
+                            )}
+                        </td>
+
+                        <td>
+                            ${ctr}%
+                        </td>
+
+                    `;
+
+
+                    tbody.appendChild(row);
+
+                }
+            );
+
+        }
+
+
+        // -----------------------------------------------------
+        // RECENT ACTIVITY
+        // -----------------------------------------------------
+
+        function renderRecentActivity(
+            activities
+        ) {
+
+            const container =
+                document.getElementById(
+                    'recentActivity'
+                );
+
+
+            if (!container) {
+                return;
+            }
+
+
+            container.innerHTML = '';
+
+
+            // Sort newest first
+            const recentActivities =
+                [...activities]
+                    .filter(
+                        function (activity) {
+
+                            return activity &&
+                                activity.timestamp;
+
+                        }
+                    )
+                    .sort(
+                        function (a, b) {
+
+                            return new Date(
+                                b.timestamp
+                            ) -
+                            new Date(
+                                a.timestamp
+                            );
+
+                        }
+                    )
+                    .slice(0, 20);
+
+
+            // EMPTY
+            if (
+                recentActivities.length === 0
+            ) {
+
+                container.innerHTML = `
+                    <p
+                        style="
+                            text-align: center;
+                            padding: 20px;
+                            color: #888;
+                        "
+                    >
+                        Belum ada aktivitas.
+                    </p>
+                `;
+
+                return;
+
+            }
+
+
+            // ACTIVITIES
+            recentActivities.forEach(
+                function (activity) {
+
+                    const date =
+                        new Date(
+                            activity.timestamp
+                        );
+
+
+                    const validDate =
+                        !Number.isNaN(
+                            date.getTime()
+                        );
+
+
+                    const timeAgo =
+                        validDate
+                            ? getTimeAgo(date)
+                            : 'Waktu tidak diketahui';
+
+
+                    const isClick =
+                        activity.type ===
+                        'click';
+
+
+                    const icon =
+                        isClick
+                            ? '🖱️'
+                            : '👁️';
+
+
+                    const action =
+                        isClick
+                            ? 'Klik Shopee'
+                            : 'Dilihat';
+
+
+                    const item =
+                        document.createElement(
+                            'div'
+                        );
+
+
+                    item.className =
+                        'activity-item';
+
+
+                    item.innerHTML = `
+
+                        <span
+                            class="activity-icon"
+                            aria-hidden="true"
+                        >
+                            ${icon}
+                        </span>
+
+                        <div
+                            class="activity-details"
+                        >
+
+                            <p>
+                                <strong>
+                                    ${escapeHtml(
+                                        activity.product_name ||
+                                        'Produk'
+                                    )}
+                                </strong>
+                            </p>
+
+                            <small>
+                                ${action}
+                                •
+                                ${escapeHtml(
+                                    timeAgo
+                                )}
+                            </small>
+
+                        </div>
+
+                    `;
+
+
+                    container.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        }
+
+
+        // -----------------------------------------------------
+        // TIME AGO
+        // -----------------------------------------------------
+
+        function getTimeAgo(
+            date
+        ) {
+
+            const now =
+                new Date();
+
+
+            const difference =
+                Math.floor(
+                    (
+                        now.getTime() -
+                        date.getTime()
+                    ) / 1000
+                );
+
+
+            if (
+                difference < 0
+            ) {
+                return 'baru saja';
+            }
+
+
+            if (
+                difference < 60
+            ) {
+                return 'baru saja';
+            }
+
+
+            if (
+                difference < 3600
+            ) {
+
+                return (
+                    Math.floor(
+                        difference / 60
+                    ) +
+                    ' menit lalu'
+                );
+
+            }
+
+
+            if (
+                difference < 86400
+            ) {
+
+                return (
+                    Math.floor(
+                        difference / 3600
+                    ) +
+                    ' jam lalu'
+                );
+
+            }
+
+
+            if (
+                difference < 2592000
+            ) {
+
+                return (
+                    Math.floor(
+                        difference / 86400
+                    ) +
+                    ' hari lalu'
+                );
+
+            }
+
+
+            return date.toLocaleDateString(
+                'id-ID'
+            );
+
+        }
+
+
+        // -----------------------------------------------------
+        // CHART DATA
+        // -----------------------------------------------------
+
+        function getLastSevenDaysData(
+            activities
+        ) {
+
+            const days = [];
+
+
+            for (
+                let i = 6;
+                i >= 0;
+                i--
+            ) {
+
+                const date =
+                    new Date();
+
+
+                date.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+
+                date.setDate(
+                    date.getDate() - i
+                );
+
+
+                days.push({
+                    date,
+                    views: 0,
+                    clicks: 0
+                });
+
+            }
+
+
+            activities.forEach(
+                function (activity) {
+
+                    if (
+                        !activity ||
+                        !activity.timestamp
+                    ) {
+                        return;
+                    }
+
+
+                    const activityDate =
+                        new Date(
+                            activity.timestamp
+                        );
+
+
+                    if (
+                        Number.isNaN(
+                            activityDate.getTime()
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    activityDate.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+
+                    const activityTime =
+                        activityDate.getTime();
+
+
+                    days.forEach(
+                        function (day) {
+
+                            if (
+                                day.date.getTime() ===
+                                activityTime
+                            ) {
+
+                                if (
+                                    activity.type ===
+                                    'click'
+                                ) {
+
+                                    day.clicks++;
+
+                                } else {
+
+                                    day.views++;
+
+                                }
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+            return days;
+
+        }
+
+
+        // -----------------------------------------------------
+        // DRAW CHART
+        // -----------------------------------------------------
+
+        function drawChart(
+            activities
+        ) {
+
+            const canvas =
+                document.getElementById(
+                    'statsChart'
+                );
+
+
+            if (!canvas) {
+                return;
+            }
+
+
+            const ctx =
+                canvas.getContext(
+                    '2d'
+                );
+
+
+            if (!ctx) {
+                return;
+            }
+
+
+            const chartData =
+                getLastSevenDaysData(
+                    activities
+                );
+
+
+            const viewsData =
+                chartData.map(
+                    function (item) {
+                        return item.views;
+                    }
+                );
+
+
+            const clicksData =
+                chartData.map(
+                    function (item) {
+                        return item.clicks;
+                    }
+                );
+
+
+            const maxValue =
+                Math.max(
+                    ...viewsData,
+                    ...clicksData,
+                    1
+                );
+
+
+            // ---------------------------------------------
+            // RESPONSIVE CANVAS
+            // ---------------------------------------------
+
+            const container =
+                canvas.parentElement;
+
+
+            const containerWidth =
+                container
+                    ? container.clientWidth
+                    : 600;
+
+
+            const width =
+                Math.max(
+                    320,
+                    Math.min(
+                        900,
+                        containerWidth
+                    )
+                );
+
+
+            const height = 280;
+
+
+            const devicePixelRatio =
+                window.devicePixelRatio ||
+                1;
+
+
+            canvas.width =
+                width *
+                devicePixelRatio;
+
+
+            canvas.height =
+                height *
+                devicePixelRatio;
+
+
+            canvas.style.width =
+                width + 'px';
+
+
+            canvas.style.height =
+                height + 'px';
+
+
+            ctx.setTransform(
+                devicePixelRatio,
+                0,
+                0,
+                devicePixelRatio,
+                0,
+                0
+            );
+
+
+            ctx.clearRect(
+                0,
+                0,
+                width,
+                height
+            );
+
+
+            // ---------------------------------------------
+            // CHART SETTINGS
+            // ---------------------------------------------
+
+            const paddingLeft = 45;
+            const paddingRight = 20;
+            const paddingTop = 45;
+            const paddingBottom = 45;
+
+
+            const chartWidth =
+                width -
+                paddingLeft -
+                paddingRight;
+
+
+            const chartHeight =
+                height -
+                paddingTop -
+                paddingBottom;
+
+
+            const groupWidth =
+                chartWidth /
+                chartData.length;
+
+
+            const barWidth =
+                Math.max(
+                    8,
+                    Math.min(
+                        22,
+                        groupWidth * 0.22
+                    )
+                );
+
+
+            // ---------------------------------------------
+            // GRID
+            // ---------------------------------------------
+
+            ctx.font =
+                '11px Arial';
+
+
+            ctx.textAlign =
+                'right';
+
+
+            ctx.textBaseline =
+                'middle';
+
+
+            for (
+                let i = 0;
+                i <= 4;
+                i++
+            ) {
+
+                const value =
+                    Math.round(
+                        (
+                            maxValue *
+                            i
+                        ) / 4
+                    );
+
+
+                const y =
+                    paddingTop +
+                    chartHeight -
+                    (
+                        chartHeight *
+                        i /
+                        4
+                    );
+
+
+                ctx.strokeStyle =
+                    'rgba(128,128,128,0.2)';
+
+
+                ctx.lineWidth = 1;
+
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    paddingLeft,
+                    y
+                );
+
+                ctx.lineTo(
+                    width -
+                    paddingRight,
+                    y
+                );
+
+                ctx.stroke();
+
+
+                ctx.fillStyle =
+                    '#888';
+
+
+                ctx.fillText(
+                    value.toLocaleString(
+                        'id-ID'
+                    ),
+                    paddingLeft - 8,
+                    y
+                );
+
+            }
+
+
+            // ---------------------------------------------
+            // BARS
+            // ---------------------------------------------
+
+            chartData.forEach(
+                function (
+                    item,
+                    index
+                ) {
+
+                    const centerX =
+                        paddingLeft +
+                        (
+                            groupWidth *
+                            index
+                        ) +
+                        (
+                            groupWidth /
+                            2
+                        );
+
+
+                    const viewHeight =
+                        maxValue > 0
+                            ? (
+                                item.views /
+                                maxValue
+                            ) *
+                            chartHeight
+                            : 0;
+
+
+                    const clickHeight =
+                        maxValue > 0
+                            ? (
+                                item.clicks /
+                                maxValue
+                            ) *
+                            chartHeight
+                            : 0;
+
+
+                    const viewX =
+                        centerX -
+                        barWidth -
+                        2;
+
+
+                    const clickX =
+                        centerX +
+                        2;
+
+
+                    // Views
+                    ctx.fillStyle =
+                        '#FF6B35';
+
+
+                    ctx.fillRect(
+                        viewX,
+                        paddingTop +
+                        chartHeight -
+                        viewHeight,
+                        barWidth,
+                        viewHeight
+                    );
+
+
+                    // Clicks
+                    ctx.fillStyle =
+                        '#FF3366';
+
+
+                    ctx.fillRect(
+                        clickX,
+                        paddingTop +
+                        chartHeight -
+                        clickHeight,
+                        barWidth,
+                        clickHeight
+                    );
+
+
+                    // Day
+                    ctx.fillStyle =
+                        '#888';
+
+
+                    ctx.textAlign =
+                        'center';
+
+
+                    ctx.textBaseline =
+                        'top';
+
+
+                    const dayLabel =
+                        item.date.toLocaleDateString(
+                            'id-ID',
+                            {
+                                weekday: 'short'
+                            }
+                        );
+
+
+                    ctx.fillText(
+                        dayLabel,
+                        centerX,
+                        paddingTop +
+                        chartHeight +
+                        10
+                    );
+
+                }
+            );
+
+
+            // ---------------------------------------------
+            // LEGEND
+            // ---------------------------------------------
+
+            const legendY = 16;
+
+
+            ctx.fillStyle =
+                '#FF6B35';
+
+
+            ctx.fillRect(
+                paddingLeft,
+                legendY,
+                12,
+                12
+            );
+
+
+            ctx.fillStyle =
+                '#888';
+
+
+            ctx.textAlign =
+                'left';
+
+
+            ctx.textBaseline =
+                'middle';
+
+
+            ctx.font =
+                '12px Arial';
+
+
+            ctx.fillText(
+                'Views',
+                paddingLeft + 18,
+                legendY + 6
+            );
+
+
+            const secondLegendX =
+                paddingLeft + 75;
+
+
+            ctx.fillStyle =
+                '#FF3366';
+
+
+            ctx.fillRect(
+                secondLegendX,
+                legendY,
+                12,
+                12
+            );
+
+
+            ctx.fillStyle =
+                '#888';
+
+
+            ctx.fillText(
+                'Clicks',
+                secondLegendX + 18,
+                legendY + 6
+            );
+
+        }
+
+
+        // -----------------------------------------------------
+        // REDRAW CHART ON RESIZE
+        // -----------------------------------------------------
+
+        let resizeTimer = null;
+
+
+        window.addEventListener(
+            'resize',
+            function () {
+
+                clearTimeout(
+                    resizeTimer
+                );
+
+
+                resizeTimer =
+                    setTimeout(
+                        function () {
+
+                            const activities =
+                                readLocalStorage(
+                                    'activities',
+                                    []
+                                );
+
+
+                            drawChart(
+                                activities
+                            );
+
+                        },
+                        150
+                    );
+
+            }
+        );
+
+
+        // -----------------------------------------------------
+        // RESET STATISTICS
+        // -----------------------------------------------------
+
+        function resetStats() {
+
+            const confirmed =
+                confirm(
+                    '⚠️ Apakah Anda yakin ingin mereset semua statistik? ' +
+                    'Tindakan ini tidak dapat dibatalkan.'
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            const products =
+                readLocalStorage(
+                    'products',
+                    []
+                );
+
+
+            // Reset product counters
+            products.forEach(
+                function (product) {
+
+                    product.views = 0;
+                    product.clicks = 0;
+
+                }
+            );
+
+
+            try {
+
+                localStorage.setItem(
+                    'products',
+                    JSON.stringify(products)
+                );
+
+
+                localStorage.setItem(
+                    'activities',
+                    JSON.stringify([])
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    'Failed to reset statistics:',
+                    error
+                );
+
+
+                alert(
+                    '❌ Gagal mereset statistik.'
+                );
+
+
+                return;
+
+            }
+
+
+            loadStats();
+
+
+            alert(
+                '✅ Statistik berhasil direset!'
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>

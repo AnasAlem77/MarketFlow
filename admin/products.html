@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kelola Produk - Market Flow</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+
+<body class="admin-body">
+
+    <!-- =========================
+         ADMIN HEADER
+    ========================== -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+
+            <div class="admin-brand">
+                <img
+                    src="../assets/images/logo.svg"
+                    alt="Market Flow"
+                    class="admin-logo-small"
+                >
+                <span>Admin Flow</span>
+            </div>
+
+            <div class="admin-user">
+                <span id="adminUsername">admin</span>
+
+                <button
+                    type="button"
+                    onclick="logout()"
+                    class="btn-logout"
+                >
+                    Logout
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- =========================
+         ADMIN LAYOUT
+    ========================== -->
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+
+            <nav class="admin-nav">
+
+                <a href="dashboard.html">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+
+                
+            <!-- Language Switcher -->
+            <div class="language-toggle" role="group" aria-label="Language selection">
+                <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
+                <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
+            </div>
+<a href="products.html" class="active">
+                    <span class="nav-icon">📦</span>
+                    Produk
+                </a>
+
+                <a href="category.html">
+                    <span class="nav-icon">📁</span>
+                    Kategori
+                </a>
+
+                <a href="stats.html">
+                    <span class="nav-icon">📈</span>
+                    Statistik
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN CONTENT
+        ========================== -->
+        <main class="admin-main">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+
+                <h1>Kelola Produk</h1>
+
+                <button
+                    type="button"
+                    class="btn btn-gradient"
+                    onclick="showAddProductForm()"
+                >
+                    + Tambah Produk
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 ADD / EDIT PRODUCT FORM
+            ========================== -->
+            <div
+                class="product-form-container"
+                id="productFormContainer"
+                style="display: none;"
+            >
+
+                <h2 id="formTitle">Tambah Produk Baru</h2>
+
+                <form
+                    class="admin-form"
+                    id="productForm"
+                    onsubmit="saveProduct(event)"
+                >
+
+                    <input
+                        type="hidden"
+                        id="productId"
+                        name="productId"
+                    >
+
+
+                    <!-- NAME + PRICE -->
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="productName">
+                                Nama Produk
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                id="productName"
+                                required
+                                maxlength="200"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="productPrice">
+                                Harga (IDR)
+                            </label>
+
+                            <input
+                                type="number"
+                                name="price"
+                                id="productPrice"
+                                required
+                                min="0"
+                                step="1"
+                                placeholder="150000"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CATEGORY + SHOPEE -->
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="productCategory">
+                                Kategori
+                            </label>
+
+                            <select
+                                name="category_id"
+                                id="productCategory"
+                                required
+                            >
+                                <option value="">
+                                    Pilih Kategori
+                                </option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="productShopeeLink">
+                                Link Shopee
+                            </label>
+
+                            <input
+                                type="url"
+                                name="shopee_link"
+                                id="productShopeeLink"
+                                required
+                                placeholder="https://shopee.co.id/..."
+                                autocomplete="url"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================
+                         PRODUCT IMAGE
+                    ========================== -->
+                    <div class="form-group">
+
+                        <label>
+                            Gambar Produk
+                        </label>
+
+                        <div class="image-upload-container">
+
+                            <input
+                                type="file"
+                                name="image"
+                                id="productImage"
+                                accept="image/*"
+                                class="file-input"
+                                onchange="previewImage(this)"
+                            >
+
+                            <div
+                                class="image-preview"
+                                id="imagePreview"
+                                onclick="triggerImageUpload()"
+                                role="button"
+                                tabindex="0"
+                                aria-label="Upload gambar produk"
+                            >
+                                <span>
+                                    📷 Klik untuk upload gambar
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <small>
+                            Atau masukkan URL gambar:
+                        </small>
+
+                        <input
+                            type="url"
+                            name="image_url"
+                            id="productImageUrl"
+                            placeholder="https://..."
+                            onchange="previewImageUrl(this.value)"
+                        >
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+                    <div class="form-group">
+
+                        <label for="productDescription">
+                            Deskripsi
+                        </label>
+
+                        <textarea
+                            name="description"
+                            id="productDescription"
+                            rows="4"
+                            maxlength="2000"
+                            placeholder="Deskripsi produk..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- FEATURED -->
+                    <div class="form-group checkbox-group">
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                name="is_featured"
+                                id="productFeatured"
+                            >
+
+                            ⭐ Produk Unggulan
+                            <small>
+                                (tampil di homepage)
+                            </small>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- ACTIVE -->
+                    <div class="form-group checkbox-group">
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                name="is_active"
+                                id="productActive"
+                                checked
+                            >
+
+                            ✅ Produk Aktif
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- FORM ACTIONS -->
+                    <div class="form-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-gradient"
+                        >
+                            💾 Simpan
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            onclick="hideProductForm()"
+                        >
+                            Batal
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- =========================
+                 PRODUCTS TABLE
+            ========================== -->
+            <div class="table-responsive">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Gambar</th>
+                            <th>Nama Produk</th>
+                            <th>Harga</th>
+                            <th>Kategori</th>
+                            <th>Featured</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="productsTable">
+                        <!-- Products loaded dynamically -->
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================
+         DELETE CONFIRMATION MODAL
+    ========================== -->
+    <div
+        class="modal"
+        id="deleteModal"
+        style="display: none;"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteModalTitle"
+    >
+
+        <div class="modal-content">
+
+            <h3 id="deleteModalTitle">
+                ⚠️ Hapus Produk?
+            </h3>
+
+            <p>
+                Apakah Anda yakin ingin menghapus produk ini?
+                Tindakan ini tidak dapat dibatalkan.
+            </p>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    onclick="confirmDelete()"
+                >
+                    🗑️ Hapus
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="closeModal()"
+                >
+                    Batal
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ADMIN JS
+    ========================== -->
+    <script src="../assets/js/language.js"></script>
+    <script src="../assets/js/admin.js"></script>
+
+
+    <script>
+        /* =====================================================
+           MARKET FLOW - PRODUCT MANAGEMENT
+        ===================================================== */
+
+        // -----------------------------------------------------
+        // AUTH CHECK
+        // -----------------------------------------------------
+
+        if (sessionStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+
+        // -----------------------------------------------------
+        // STATE
+        // -----------------------------------------------------
+
+        let deleteProductId = null;
+        let products = [];
+        let categories = [];
+
+
+        // -----------------------------------------------------
+        // DOM READY
+        // -----------------------------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            loadCategories();
+            loadProducts();
+
+            const urlParams = new URLSearchParams(
+                window.location.search
+            );
+
+            if (urlParams.get('action') === 'add') {
+                showAddProductForm();
+            }
+
+        });
+
+
+        // -----------------------------------------------------
+        // LOGOUT
+        // -----------------------------------------------------
+
+        function logout() {
+
+            sessionStorage.clear();
+
+            window.location.href = 'login.html';
+
+        }
+
+
+        // -----------------------------------------------------
+        // SAFE LOCAL STORAGE READ
+        // -----------------------------------------------------
+
+        function readLocalStorage(key, fallback = []) {
+
+            try {
+
+                const value = localStorage.getItem(key);
+
+                if (!value) {
+                    return fallback;
+                }
+
+                const parsed = JSON.parse(value);
+
+                return Array.isArray(parsed)
+                    ? parsed
+                    : fallback;
+
+            } catch (error) {
+
+                console.error(
+                    `Failed to read localStorage key: ${key}`,
+                    error
+                );
+
+                return fallback;
+
+            }
+
+        }
+
+
+        // -----------------------------------------------------
+        // ESCAPE HTML
+        // -----------------------------------------------------
+
+        function escapeHtml(value) {
+
+            if (value === null || value === undefined) {
+                return '';
+            }
+
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+        }
+
+
+        // -----------------------------------------------------
+        // ESCAPE ATTRIBUTE
+        // -----------------------------------------------------
+
+        function escapeAttribute(value) {
+            return escapeHtml(value);
+        }
+
+
+        // -----------------------------------------------------
+        // LOAD CATEGORIES
+        // -----------------------------------------------------
+
+        function loadCategories() {
+
+            categories = readLocalStorage(
+                'categories',
+                []
+            );
+
+            const select =
+                document.getElementById('productCategory');
+
+            if (!select) {
+                return;
+            }
+
+            select.innerHTML =
+                '<option value="">Pilih Kategori</option>';
+
+            categories.forEach(function (category) {
+
+                if (!category || category.id === undefined) {
+                    return;
+                }
+
+                const option =
+                    document.createElement('option');
+
+                option.value = category.id;
+                option.textContent =
+                    category.name || 'Tanpa Nama';
+
+                select.appendChild(option);
+
+            });
+
+        }
+
+
+        // -----------------------------------------------------
+        // LOAD PRODUCTS
+        // -----------------------------------------------------
+
+        function loadProducts() {
+
+            products = readLocalStorage(
+                'products',
+                []
+            );
+
+            renderProducts();
+
+        }
+
+
+        // -----------------------------------------------------
+        // RENDER PRODUCTS
+        // -----------------------------------------------------
+
+        function renderProducts() {
+
+            const tbody =
+                document.getElementById('productsTable');
+
+            if (!tbody) {
+                return;
+            }
+
+            tbody.innerHTML = '';
+
+
+            // EMPTY STATE
+            if (products.length === 0) {
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="7"
+                            style="
+                                text-align: center;
+                                padding: 40px;
+                            "
+                        >
+                            Belum ada produk.
+                            Klik "Tambah Produk"
+                            untuk menambahkan.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+
+            }
+
+
+            // PRODUCTS
+            products.forEach(function (product) {
+
+                const category = categories.find(
+                    function (categoryItem) {
+                        return String(categoryItem.id) ===
+                            String(product.category_id);
+                    }
+                );
+
+                const categoryName =
+                    category
+                        ? category.name
+                        : '-';
+
+
+                const priceNumber =
+                    Number(product.price) || 0;
+
+                const priceFormatted =
+                    'Rp ' +
+                    priceNumber.toLocaleString('id-ID');
+
+
+                const productName =
+                    escapeHtml(product.name || 'Tanpa Nama');
+
+
+                const image =
+                    product.image
+                        ? escapeAttribute(product.image)
+                        : '../assets/images/placeholder.svg';
+
+
+                const imageAlt =
+                    escapeAttribute(
+                        product.name || 'Produk'
+                    );
+
+
+                const id =
+                    Number(product.id);
+
+
+                const isFeatured =
+                    product.is_featured === true ||
+                    product.is_featured === 1 ||
+                    product.is_featured === '1';
+
+
+                const isActive =
+                    product.is_active === true ||
+                    product.is_active === 1 ||
+                    product.is_active === '1';
+
+
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>
+                        <img
+                            src="${image}"
+                            alt="${imageAlt}"
+                            class="product-thumb"
+                            loading="lazy"
+                            onerror="
+                                this.onerror=null;
+                                this.src='../assets/images/placeholder.svg';
+                            "
+                        >
+                    </td>
+
+                    <td>
+                        ${productName}
+                    </td>
+
+                    <td>
+                        ${priceFormatted}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(categoryName)}
+                    </td>
+
+                    <td>
+                        ${isFeatured ? '⭐' : '-'}
+                    </td>
+
+                    <td>
+                        <span
+                            class="badge ${
+                                isActive
+                                    ? 'badge-success'
+                                    : 'badge-danger'
+                            }"
+                        >
+                            ${
+                                isActive
+                                    ? 'Aktif'
+                                    : 'Nonaktif'
+                            }
+                        </span>
+                    </td>
+
+                    <td class="action-buttons">
+
+                        <button
+                            type="button"
+                            class="btn-icon btn-edit"
+                            onclick="editProduct(${id})"
+                            title="Edit"
+                            aria-label="Edit produk"
+                        >
+                            ✏️
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn-icon btn-delete"
+                            onclick="showDeleteModal(${id})"
+                            title="Hapus"
+                            aria-label="Hapus produk"
+                        >
+                            🗑️
+                        </button>
+
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+
+            });
+
+        }
+
+
+        // -----------------------------------------------------
+        // SHOW ADD FORM
+        // -----------------------------------------------------
+
+        function showAddProductForm() {
+
+            const container =
+                document.getElementById(
+                    'productFormContainer'
+                );
+
+            const form =
+                document.getElementById(
+                    'productForm'
+                );
+
+            const title =
+                document.getElementById(
+                    'formTitle'
+                );
+
+            const productId =
+                document.getElementById(
+                    'productId'
+                );
+
+            const imagePreview =
+                document.getElementById(
+                    'imagePreview'
+                );
+
+
+            if (!container || !form) {
+                return;
+            }
+
+
+            container.style.display = 'block';
+
+            title.textContent =
+                'Tambah Produk Baru';
+
+
+            form.reset();
+
+
+            productId.value = '';
+
+
+            imagePreview.innerHTML = `
+                <span>
+                    📷 Klik untuk upload gambar
+                </span>
+            `;
+
+
+            // Checkbox active should remain enabled
+            document.getElementById(
+                'productActive'
+            ).checked = true;
+
+
+            scrollToForm();
+
+        }
+
+
+        // -----------------------------------------------------
+        // HIDE FORM
+        // -----------------------------------------------------
+
+        function hideProductForm() {
+
+            const container =
+                document.getElementById(
+                    'productFormContainer'
+                );
+
+            if (container) {
+                container.style.display = 'none';
+            }
+
+        }
+
+
+        // -----------------------------------------------------
+        // EDIT PRODUCT
+        // -----------------------------------------------------
+
+        function editProduct(id) {
+
+            const product =
+                products.find(function (item) {
+
+                    return String(item.id) ===
+                        String(id);
+
+                });
+
+
+            if (!product) {
+                alert('Produk tidak ditemukan.');
+                return;
+            }
+
+
+            document.getElementById(
+                'productFormContainer'
+            ).style.display = 'block';
+
+
+            document.getElementById(
+                'formTitle'
+            ).textContent = 'Edit Produk';
+
+
+            document.getElementById(
+                'productId'
+            ).value = product.id;
+
+
+            document.getElementById(
+                'productName'
+            ).value = product.name || '';
+
+
+            document.getElementById(
+                'productPrice'
+            ).value = product.price || '';
+
+
+            document.getElementById(
+                'productCategory'
+            ).value =
+                product.category_id !== undefined
+                    ? product.category_id
+                    : '';
+
+
+            document.getElementById(
+                'productShopeeLink'
+            ).value =
+                product.shopee_link || '';
+
+
+            // Keep image URL if available
+            document.getElementById(
+                'productImageUrl'
+            ).value =
+                product.image || '';
+
+
+            document.getElementById(
+                'productDescription'
+            ).value =
+                product.description || '';
+
+
+            document.getElementById(
+                'productFeatured'
+            ).checked =
+                product.is_featured === true ||
+                product.is_featured === 1 ||
+                product.is_featured === '1';
+
+
+            document.getElementById(
+                'productActive'
+            ).checked =
+                product.is_active === true ||
+                product.is_active === 1 ||
+                product.is_active === '1';
+
+
+            const preview =
+                document.getElementById(
+                    'imagePreview'
+                );
+
+
+            if (product.image) {
+
+                preview.innerHTML = `
+                    <img
+                        src="${escapeAttribute(product.image)}"
+                        alt="Preview"
+                        onerror="
+                            this.onerror=null;
+                            this.parentElement.innerHTML =
+                            '<span>⚠️ Gambar tidak tersedia</span>';
+                        "
+                    >
+                `;
+
+            } else {
+
+                preview.innerHTML = `
+                    <span>
+                        📷 Klik untuk upload gambar
+                    </span>
+                `;
+
+            }
+
+
+            scrollToForm();
+
+        }
+
+
+        // -----------------------------------------------------
+        // SCROLL TO FORM
+        // -----------------------------------------------------
+
+        function scrollToForm() {
+
+            const container =
+                document.getElementById(
+                    'productFormContainer'
+                );
+
+            if (!container) {
+                return;
+            }
+
+
+            setTimeout(function () {
+
+                container.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+
+            }, 50);
+
+        }
+
+
+        // -----------------------------------------------------
+        // IMAGE UPLOAD TRIGGER
+        // -----------------------------------------------------
+
+        function triggerImageUpload() {
+
+            const input =
+                document.getElementById(
+                    'productImage'
+                );
+
+            if (input) {
+                input.click();
+            }
+
+        }
+
+
+        // -----------------------------------------------------
+        // IMAGE PREVIEW - FILE
+        // -----------------------------------------------------
+
+        function previewImage(input) {
+
+            if (
+                !input ||
+                !input.files ||
+                !input.files[0]
+            ) {
+                return;
+            }
+
+
+            const file =
+                input.files[0];
+
+
+            // Basic image validation
+            if (!file.type.startsWith('image/')) {
+
+                alert(
+                    'File yang dipilih bukan gambar.'
+                );
+
+                input.value = '';
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function (event) {
+
+                const preview =
+                    document.getElementById(
+                        'imagePreview'
+                    );
+
+
+                preview.innerHTML = `
+                    <img
+                        src="${event.target.result}"
+                        alt="Preview"
+                    >
+                `;
+
+
+                // Clear URL when file is selected
+                document.getElementById(
+                    'productImageUrl'
+                ).value = '';
+
+            };
+
+
+            reader.onerror = function () {
+
+                alert(
+                    'Gagal membaca gambar.'
+                );
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }
+
+
+        // -----------------------------------------------------
+        // IMAGE PREVIEW - URL
+        // -----------------------------------------------------
+
+        function previewImageUrl(url) {
+
+            const preview =
+                document.getElementById(
+                    'imagePreview'
+                );
+
+
+            if (!url || !url.trim()) {
+
+                preview.innerHTML = `
+                    <span>
+                        📷 Klik untuk upload gambar
+                    </span>
+                `;
+
+                return;
+
+            }
+
+
+            const safeUrl =
+                url.trim();
+
+
+            preview.innerHTML = `
+                <img
+                    src="${escapeAttribute(safeUrl)}"
+                    alt="Preview"
+                    onerror="handleImagePreviewError(this)"
+                >
+            `;
+
+
+            // URL selected, clear uploaded file
+            document.getElementById(
+                'productImage'
+            ).value = '';
+
+        }
+
+
+        // -----------------------------------------------------
+        // IMAGE PREVIEW ERROR
+        // -----------------------------------------------------
+
+        function handleImagePreviewError(image) {
+
+            if (!image) {
+                return;
+            }
+
+
+            image.parentElement.innerHTML = `
+                <span>
+                    ⚠️ URL gambar tidak valid
+                </span>
+            `;
+
+        }
+
+
+        // -----------------------------------------------------
+        // SAVE PRODUCT
+        // -----------------------------------------------------
+
+        function saveProduct(event) {
+
+            event.preventDefault();
+
+
+            const id =
+                document.getElementById(
+                    'productId'
+                ).value.trim();
+
+
+            const name =
+                document.getElementById(
+                    'productName'
+                ).value.trim();
+
+
+            const price =
+                Number(
+                    document.getElementById(
+                        'productPrice'
+                    ).value
+                );
+
+
+            const categoryValue =
+                document.getElementById(
+                    'productCategory'
+                ).value;
+
+
+            const category_id =
+                Number(categoryValue);
+
+
+            const shopee_link =
+                document.getElementById(
+                    'productShopeeLink'
+                ).value.trim();
+
+
+            const image_url =
+                document.getElementById(
+                    'productImageUrl'
+                ).value.trim();
+
+
+            const description =
+                document.getElementById(
+                    'productDescription'
+                ).value.trim();
+
+
+            const is_featured =
+                document.getElementById(
+                    'productFeatured'
+                ).checked;
+
+
+            const is_active =
+                document.getElementById(
+                    'productActive'
+                ).checked;
+
+
+            const imageFile =
+                document.getElementById(
+                    'productImage'
+                ).files[0];
+
+
+            // ---------------------------------------------
+            // VALIDATION
+            // ---------------------------------------------
+
+            if (!name) {
+
+                alert(
+                    'Nama produk wajib diisi.'
+                );
+
+                return;
+
+            }
+
+
+            if (!Number.isFinite(price) || price < 0) {
+
+                alert(
+                    'Harga produk tidak valid.'
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !Number.isFinite(category_id) ||
+                category_id <= 0
+            ) {
+
+                alert(
+                    'Silakan pilih kategori.'
+                );
+
+                return;
+
+            }
+
+
+            if (!shopee_link) {
+
+                alert(
+                    'Link Shopee wajib diisi.'
+                );
+
+                return;
+
+            }
+
+
+            // ---------------------------------------------
+            // IMAGE HANDLING
+            // ---------------------------------------------
+
+            if (imageFile) {
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload = function (event) {
+
+                    saveProductData(
+                        id,
+                        name,
+                        price,
+                        category_id,
+                        shopee_link,
+                        event.target.result,
+                        description,
+                        is_featured,
+                        is_active
+                    );
+
+                };
+
+
+                reader.onerror = function () {
+
+                    alert(
+                        'Gagal membaca file gambar.'
+                    );
+
+                };
+
+
+                reader.readAsDataURL(
+                    imageFile
+                );
+
+                return;
+
+            }
+
+
+            // ---------------------------------------------
+            // EDIT WITHOUT NEW IMAGE
+            // ---------------------------------------------
+
+            let image = image_url;
+
+
+            if (id && !image) {
+
+                const existingProduct =
+                    products.find(function (item) {
+
+                        return String(item.id) ===
+                            String(id);
+
+                    });
+
+
+                if (
+                    existingProduct &&
+                    existingProduct.image
+                ) {
+
+                    image =
+                        existingProduct.image;
+
+                }
+
+            }
+
+
+            saveProductData(
+                id,
+                name,
+                price,
+                category_id,
+                shopee_link,
+                image,
+                description,
+                is_featured,
+                is_active
+            );
+
+        }
+
+
+        // -----------------------------------------------------
+        // SAVE PRODUCT DATA
+        // -----------------------------------------------------
+
+        function saveProductData(
+            id,
+            name,
+            price,
+            category_id,
+            shopee_link,
+            image,
+            description,
+            is_featured,
+            is_active
+        ) {
+
+            // ---------------------------------------------
+            // EDIT EXISTING PRODUCT
+            // ---------------------------------------------
+
+            if (id) {
+
+                const index =
+                    products.findIndex(
+                        function (product) {
+
+                            return String(product.id) ===
+                                String(id);
+
+                        }
+                    );
+
+
+                if (index === -1) {
+
+                    alert(
+                        'Produk yang ingin diedit tidak ditemukan.'
+                    );
+
+                    return;
+
+                }
+
+
+                const existing =
+                    products[index];
+
+
+                products[index] = {
+
+                    ...existing,
+
+                    name,
+                    price,
+                    category_id,
+                    shopee_link,
+                    image:
+                        image || existing.image || '',
+                    description,
+                    is_featured,
+                    is_active
+
+                };
+
+            }
+
+
+            // ---------------------------------------------
+            // ADD NEW PRODUCT
+            // ---------------------------------------------
+
+            else {
+
+                const ids =
+                    products
+                        .map(function (product) {
+                            return Number(product.id);
+                        })
+                        .filter(function (value) {
+                            return Number.isFinite(value);
+                        });
+
+
+                const newId =
+                    ids.length > 0
+                        ? Math.max(...ids) + 1
+                        : 1;
+
+
+                products.push({
+
+                    id: newId,
+
+                    name,
+
+                    price,
+
+                    category_id,
+
+                    shopee_link,
+
+                    image: image || '',
+
+                    description,
+
+                    is_featured,
+
+                    is_active,
+
+                    views: 0,
+
+                    clicks: 0,
+
+                    created_at:
+                        new Date().toISOString()
+
+                });
+
+            }
+
+
+            // ---------------------------------------------
+            // SAVE
+            // ---------------------------------------------
+
+            try {
+
+                localStorage.setItem(
+                    'products',
+                    JSON.stringify(products)
+                );
+
+            } catch (error) {
+
+                console.error(
+                    'Failed to save products:',
+                    error
+                );
+
+
+                alert(
+                    'Gagal menyimpan produk. ' +
+                    'Penyimpanan browser mungkin sudah penuh.'
+                );
+
+                return;
+
+            }
+
+
+            // ---------------------------------------------
+            // REFRESH UI
+            // ---------------------------------------------
+
+            hideProductForm();
+
+            loadProducts();
+
+
+            alert(
+                '✅ Produk berhasil disimpan!'
+            );
+
+        }
+
+
+        // -----------------------------------------------------
+        // SHOW DELETE MODAL
+        // -----------------------------------------------------
+
+        function showDeleteModal(id) {
+
+            const product =
+                products.find(function (item) {
+
+                    return String(item.id) ===
+                        String(id);
+
+                });
+
+
+            if (!product) {
+                return;
+            }
+
+
+            deleteProductId = id;
+
+
+            const modal =
+                document.getElementById(
+                    'deleteModal'
+                );
+
+
+            modal.style.display = 'flex';
+
+        }
+
+
+        // -----------------------------------------------------
+        // CLOSE DELETE MODAL
+        // -----------------------------------------------------
+
+        function closeModal() {
+
+            const modal =
+                document.getElementById(
+                    'deleteModal'
+                );
+
+
+            modal.style.display = 'none';
+
+
+            deleteProductId = null;
+
+        }
+
+
+        // -----------------------------------------------------
+        // CONFIRM DELETE
+        // -----------------------------------------------------
+
+        function confirmDelete() {
+
+            if (deleteProductId === null) {
+                return;
+            }
+
+
+            const productExists =
+                products.some(function (product) {
+
+                    return String(product.id) ===
+                        String(deleteProductId);
+
+                });
+
+
+            if (!productExists) {
+
+                closeModal();
+
+                return;
+
+            }
+
+
+            products =
+                products.filter(function (product) {
+
+                    return String(product.id) !==
+                        String(deleteProductId);
+
+                });
+
+
+            try {
+
+                localStorage.setItem(
+                    'products',
+                    JSON.stringify(products)
+                );
+
+            } catch (error) {
+
+                console.error(
+                    'Failed to delete product:',
+                    error
+                );
+
+                alert(
+                    'Gagal menghapus produk.'
+                );
+
+                return;
+
+            }
+
+
+            loadProducts();
+
+            closeModal();
+
+
+            alert(
+                '🗑️ Produk berhasil dihapus!'
+            );
+
+        }
+
+
+        // -----------------------------------------------------
+        // CLOSE MODAL WHEN CLICKING OUTSIDE
+        // -----------------------------------------------------
+
+        document.addEventListener(
+            'click',
+            function (event) {
+
+                const modal =
+                    document.getElementById(
+                        'deleteModal'
+                    );
+
+
+                if (
+                    event.target === modal
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        // -----------------------------------------------------
+        // ESC KEY
+        // -----------------------------------------------------
+
+        document.addEventListener(
+            'keydown',
+            function (event) {
+
+                if (
+                    event.key === 'Escape'
+                ) {
+
+                    const modal =
+                        document.getElementById(
+                            'deleteModal'
+                        );
+
+
+                    if (
+                        modal &&
+                        modal.style.display === 'flex'
+                    ) {
+
+                        closeModal();
+
+                    }
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Product - Market Flow</title>
+
+    <meta
+        name="description"
+        content="Product details - Market Flow"
+    >
+
+    <meta
+        name="theme-color"
+        content="#090909"
+    >
+
+    <!-- Open Graph -->
+    <meta
+        property="og:title"
+        content="Product - Market Flow"
+    >
+
+    <meta
+        property="og:description"
+        content="Discover this amazing product from Market Flow."
+    >
+
+    <meta
+        property="og:type"
+        content="product"
+    >
+
+    <meta
+        property="og:url"
+        content="https://marketflow.vercel.app/product.html"
+    >
+
+    <meta
+        property="og:image"
+        content=""
+        id="ogImage"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Market Flow"
+    >
+
+    <!-- Favicon -->
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="assets/images/logo.svg"
+    >
+
+    <!-- Main Styles -->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="assets/css/main.css"
+    >
+</head>
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="header">
+
+        <div class="container header-inner">
+
+            <!-- Back -->
+            <a
+                href="index.html"
+                class="back-btn"
+                aria-label="Back to home"
+                title="Back to home"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M19 12H5"></path>
+                    <path d="m12 19-7-7 7-7"></path>
+                </svg>
+            </a>
+
+
+            <!-- Logo -->
+            <a
+                href="index.html"
+                class="logo-link"
+                aria-label="Market Flow Home"
+            >
+                <img
+                    src="assets/images/logo.svg"
+                    alt="Market Flow"
+                    class="logo"
+                >
+            </a>
+
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <div class="language-toggle" role="group" aria-label="Language selection">
+                    <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
+                    <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
+                </div>
+
+                <!-- Admin -->
+                <a
+                    href="admin/dashboard.html"
+                    class="admin-header-btn"
+                    aria-label="Admin Dashboard"
+                    title="Admin Dashboard"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="20"
+                        height="20"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        ></circle>
+
+                        <path
+                            d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.42 1.42-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-2v-.48a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.42-1.42.06-.06A1.7 1.7 0 0 0 9.4 15a1.7 1.7 0 0 0-1.56-1.03H7v-2h.84A1.7 1.7 0 0 0 9.4 10.94a1.7 1.7 0 0 0-.34-1.88L9 9l1.42-1.42.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 13.39 6.4V6h2v.4a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06L19.78 9l-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.94 12H21v2h-.06A1.7 1.7 0 0 0 19.4 15Z"
+                        ></path>
+                    </svg>
+                </a>
+
+
+                <!-- Share -->
+                <button
+                    type="button"
+                    class="share-btn"
+                    onclick="shareProduct()"
+                    aria-label="Share product"
+                    title="Share product"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="22"
+                        height="22"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="18"
+                            cy="5"
+                            r="3"
+                        ></circle>
+
+                        <circle
+                            cx="6"
+                            cy="12"
+                            r="3"
+                        ></circle>
+
+                        <circle
+                            cx="18"
+                            cy="19"
+                            r="3"
+                        ></circle>
+
+                        <line
+                            x1="8.59"
+                            y1="13.51"
+                            x2="15.42"
+                            y2="17.49"
+                        ></line>
+
+                        <line
+                            x1="15.41"
+                            y1="6.51"
+                            x2="8.59"
+                            y2="10.49"
+                        ></line>
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         PRODUCT DETAIL
+         ===================================================== -->
+
+    <main class="product-detail">
+
+        <div class="container">
+
+            <div class="product-container">
+
+                <!-- =================================================
+                     PRODUCT IMAGE
+                     ================================================= -->
+
+                <div class="product-image-container">
+
+                    <img
+                        src=""
+                        alt="Product"
+                        class="product-image"
+                        id="productImage"
+                        decoding="async"
+                    >
+
+                    <span
+                        class="product-badge"
+                        id="productBadge"
+                    >
+                        HOT
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     PRODUCT INFORMATION
+                     ================================================= -->
+
+                <div class="product-info">
+
+                    <!-- Category -->
+                    <span
+                        class="product-category"
+                        id="productCategory"
+                    >
+                        Category
+                    </span>
+
+
+                    <!-- Product Name -->
+                    <h1
+                        class="product-name"
+                        id="productName"
+                    >
+                        Product Name
+                    </h1>
+
+
+                    <!-- Price -->
+                    <div
+                        class="product-price"
+                        id="productPrice"
+                    >
+                        Rp 0
+                    </div>
+
+
+                    <!-- Product Stats -->
+                    <div class="product-stats">
+
+                        <span class="stat-item">
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="16"
+                                height="16"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                                ></path>
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="3"
+                                ></circle>
+                            </svg>
+
+                            <span id="productViews">0</span>
+
+                            <span data-i18n="product.views">
+                                views
+                            </span>
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- Description -->
+                    <div class="product-description">
+
+                        <h2 data-i18n="product.description">
+                            Deskripsi
+                        </h2>
+
+                        <p id="productDescription">
+                            Product description here...
+                        </p>
+
+                    </div>
+
+
+                    <!-- Buy Button -->
+                    <div class="product-buttons">
+                        <a
+                        href="#"
+                        class="btn btn-gradient btn-buy"
+                        id="buyButton"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+
+                        <span data-i18n="product.buy_now">
+                            Beli Sekarang
+                        </span>
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            width="20"
+                            height="20"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
+                        </svg>
+
+                    </a>
+                        <button type="button" class="btn btn-outline btn-share-main" onclick="shareProduct()" aria-label="Share product">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 13.5 6.8 4"></path><path d="m15.4 6.5-6.8 4"></path></svg>
+                            <span data-i18n="product.share">Bagikan</span>
+                        </button>
+                    </div>
+
+
+                    <!-- =================================================
+                         SHARE SECTION
+                         ================================================= -->
+
+                    <div class="share-section">
+
+                        <h3 data-i18n="product.share">
+                            Bagikan
+                        </h3>
+
+                        <div class="share-buttons">
+
+                            <!-- WhatsApp -->
+                            <button
+                                type="button"
+                                class="share-btn whatsapp"
+                                onclick="shareToWhatsApp()"
+                                aria-label="Share to WhatsApp"
+                                title="WhatsApp"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="22"
+                                    height="22"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                                    ></path>
+                                </svg>
+                            </button>
+
+
+                            <!-- Telegram -->
+                            <button
+                                type="button"
+                                class="share-btn telegram"
+                                onclick="shareToTelegram()"
+                                aria-label="Share to Telegram"
+                                title="Telegram"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="22"
+                                    height="22"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"
+                                    ></path>
+                                </svg>
+                            </button>
+
+
+                            <!-- Facebook -->
+                            <button
+                                type="button"
+                                class="share-btn facebook"
+                                onclick="shareToFacebook()"
+                                aria-label="Share to Facebook"
+                                title="Facebook"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="22"
+                                    height="22"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                                    ></path>
+                                </svg>
+                            </button>
+
+
+                            <!-- X / Twitter -->
+                            <button
+                                type="button"
+                                class="share-btn twitter"
+                                onclick="shareToTwitter()"
+                                aria-label="Share to X"
+                                title="X"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="22"
+                                    height="22"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817-5.963 6.817H1.684l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                                    ></path>
+                                </svg>
+                            </button>
+
+
+                            <!-- Copy Link -->
+                            <button
+                                type="button"
+                                class="share-btn copy"
+                                onclick="copyLink()"
+                                aria-label="Copy product link"
+                                title="Copy link"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="22"
+                                    height="22"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 RELATED PRODUCTS
+                 ================================================= -->
+
+            <section class="related-products">
+
+                <div class="section-header">
+
+                    <h2
+                        class="section-title"
+                        data-i18n="product.related"
+                    >
+                        Produk Terkait
+                    </h2>
+
+                </div>
+
+                <div
+                    class="products-scroll"
+                    id="relatedProducts"
+                ></div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="footer">
+        <div class="container">
+
+            <div class="footer-content">
+
+                <!-- Brand -->
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo-link" aria-label="Market Flow Home">
+                        <img src="assets/images/logo.svg" alt="Market Flow" class="footer-logo" loading="lazy" decoding="async">
+                    </a>
+                    <p class="footer-tagline" data-i18n="footer.tagline">FIND • CHOOSE • BUY</p>
+                    <p class="footer-description" data-i18n="footer.description">Temukan produk pilihan dengan mudah di Market Flow.</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-column">
+                    <h3 class="footer-title" data-i18n="footer.quick_links">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html" class="footer-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"></path><path d="M5 9v11h14V9"></path><path d="M9 20v-6h6v6"></path></svg><span data-i18n="footer.home">Home</span></a></li>
+                        <li><a href="category.html" class="footer-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg><span data-i18n="footer.categories">Categories</span></a></li>
+                        <li><a href="search.html" class="footer-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><span data-i18n="footer.search">Search</span></a></li>
+                        <li><a href="about.html" class="footer-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 10v6"></path><path d="M12 7h.01"></path></svg><span data-i18n="footer.about">About</span></a></li>
+                        <li><a href="contact.html" class="footer-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg><span data-i18n="footer.contact">Contact</span></a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div class="footer-column">
+                    <h3 class="footer-title" data-i18n="footer.legal">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html" class="footer-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"></path><path d="m9 12 2 2 4-4"></path></svg><span data-i18n="footer.privacy">Privacy Policy</span></a></li>
+                        <li><a href="terms.html" class="footer-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18H6z"></path><path d="M9 7h6"></path><path d="M9 11h6"></path><path d="M9 15h4"></path></svg><span data-i18n="footer.terms">Terms of Service</span></a></li>
+                    </ul>
+                </div>
+
+                <!-- Social -->
+                <div class="footer-column">
+                    <h3 class="footer-title" data-i18n="footer.follow_us">Follow Us</h3>
+                    <ul class="footer-social">
+                        <li><a href="https://www.tiktok.com/@marketflow_2" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-3.78h-3.2v13.18a2.89 2.89 0 1 1-2.89-2.89c.16 0 .32.01.48.04V9.98a6.09 6.09 0 1 0 5.61 6.1V9.39a8.1 8.1 0 0 0 4.74 1.53V7.73c-.33 0-.65-.01-.97-.04Z"></path></svg><span data-i18n="footer.tiktok">TikTok</span></a></li>
+                        <li><a href="https://www.instagram.com/marketflow_2" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg><span data-i18n="footer.instagram">Instagram</span></a></li>
+                        <li><a href="https://youtube.com/@marketflow_2?si=LAshC5FpbigwbZTR" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58Z"></path><path d="m9.75 15.02 5.75-3.02-5.75-3.02v6.04Z" fill="currentColor" stroke="none"></path></svg><span data-i18n="footer.youtube">YouTube</span></a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p class="footer-copyright" data-i18n="footer.copyright">© 2026 Market Flow. All rights reserved.</p>
+                <a href="https://github.com/AnasAlem77" target="_blank" rel="noopener noreferrer" class="footer-developer" data-i18n="about.developer_text" aria-label="Developed by Anas Alem">Developed by Anas Alem</a>
+            </div>
+
+        </div>
+    </footer>
+
+
+    <!-- =====================================================
+         MOBILE BOTTOM NAVIGATION
+         ===================================================== -->
+
+    <nav
+        class="mobile-bottom-nav"
+        aria-label="Mobile navigation"
+    >
+
+        <!-- Home -->
+        <a
+            href="index.html"
+            class="mobile-nav-item"
+            aria-label="Home"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                width="21"
+                height="21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <path d="m3 10 9-7 9 7"></path>
+                <path d="M5 9v11h14V9"></path>
+                <path d="M9 20v-6h6v6"></path>
+            </svg>
+
+            <span data-i18n="nav.home">
+                Beranda
+            </span>
+        </a>
+
+
+        <!-- Categories -->
+        <a
+            href="category.html"
+            class="mobile-nav-item"
+            aria-label="Categories"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                width="21"
+                height="21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <rect
+                    x="3"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1"
+                ></rect>
+
+                <rect
+                    x="14"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1"
+                ></rect>
+
+                <rect
+                    x="3"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1"
+                ></rect>
+
+                <rect
+                    x="14"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1"
+                ></rect>
+            </svg>
+
+            <span data-i18n="nav.categories">
+                Kategori
+            </span>
+        </a>
+
+
+        <!-- Search -->
+        <a
+            href="search.html"
+            class="mobile-nav-item"
+            aria-label="Search"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                width="21"
+                height="21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                ></circle>
+
+                <path d="m20 20-4-4"></path>
+            </svg>
+
+            <span data-i18n="nav.search">
+                Cari
+            </span>
+        </a>
+
+
+        <!-- About -->
+        <a
+            href="about.html"
+            class="mobile-nav-item"
+            aria-label="About"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                width="21"
+                height="21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                ></circle>
+
+                <path d="M12 10v6"></path>
+                <path d="M12 7h.01"></path>
+            </svg>
+
+            <span data-i18n="nav.about">
+                Tentang
+            </span>
+        </a>
+
+
+        <!-- Contact -->
+        <a
+            href="contact.html"
+            class="mobile-nav-item"
+            aria-label="Contact"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                width="21"
+                height="21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <rect
+                    x="3"
+                    y="5"
+                    width="18"
+                    height="14"
+                    rx="2"
+                ></rect>
+
+                <path d="m3 7 9 6 9-6"></path>
+            </svg>
+
+            <span data-i18n="nav.contact">
+                Kontak
+            </span>
+        </a>
+
+    </nav>
+
+
+    <!-- =====================================================
+         SCRIPTS
+         ===================================================== -->
+
+    <script src="assets/js/language.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>

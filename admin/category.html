@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kelola Kategori - Market Flow</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+
+<body class="admin-body">
+
+    <!-- ==================== ADMIN HEADER ==================== -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+
+            <div class="admin-brand">
+                <img
+                    src="../assets/images/logo.svg"
+                    alt="Market Flow"
+                    class="admin-logo-small"
+                >
+                <span>Admin Flow</span>
+            </div>
+
+            <div class="admin-user">
+                <span id="adminUsername">admin</span>
+                <button
+                    type="button"
+                    onclick="logout()"
+                    class="btn-logout"
+                >
+                    Logout
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- ==================== ADMIN LAYOUT ==================== -->
+    <div class="admin-layout">
+
+        <!-- ==================== SIDEBAR ==================== -->
+        <aside class="admin-sidebar">
+            <nav class="admin-nav">
+
+                <a href="dashboard.html">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+
+                
+            <!-- Language Switcher -->
+            <div class="language-toggle" role="group" aria-label="Language selection">
+                <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
+                <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
+            </div>
+<a href="products.html">
+                    <span class="nav-icon">📦</span>
+                    Produk
+                </a>
+
+                <a href="category.html" class="active">
+                    <span class="nav-icon">📁</span>
+                    Kategori
+                </a>
+
+                <a href="stats.html">
+                    <span class="nav-icon">📈</span>
+                    Statistik
+                </a>
+
+            </nav>
+        </aside>
+
+
+        <!-- ==================== MAIN CONTENT ==================== -->
+        <main class="admin-main">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Kelola Kategori</h1>
+
+                <button
+                    type="button"
+                    class="btn btn-gradient"
+                    onclick="showAddCategoryForm()"
+                >
+                    + Tambah Kategori
+                </button>
+            </div>
+
+
+            <!-- ==================== CATEGORY FORM ==================== -->
+            <div
+                class="category-form-container"
+                id="categoryFormContainer"
+                style="display: none;"
+            >
+
+                <h2 id="formTitle">Tambah Kategori Baru</h2>
+
+                <form
+                    class="admin-form"
+                    id="categoryForm"
+                    onsubmit="saveCategory(event)"
+                >
+
+                    <input
+                        type="hidden"
+                        id="categoryId"
+                        name="categoryId"
+                    >
+
+
+                    <!-- Names -->
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="categoryNameEn">
+                                Nama Kategori (English)
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name_en"
+                                id="categoryNameEn"
+                                required
+                                maxlength="100"
+                                autocomplete="off"
+                                placeholder="Gadgets"
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="categoryNameId">
+                                Nama Kategori (Indonesian)
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name_id"
+                                id="categoryNameId"
+                                required
+                                maxlength="100"
+                                autocomplete="off"
+                                placeholder="Gadget"
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <!-- Icon -->
+                    <div class="form-group">
+
+                        <label for="categoryIcon">
+                            Ikon Kategori
+                        </label>
+
+                        <div class="icon-selector">
+
+                            <select
+                                name="icon"
+                                id="categoryIcon"
+                                required
+                            >
+                                <option value="📱">📱 Gadgets</option>
+                                <option value="👕">👕 Fashion</option>
+                                <option value="🏠">🏠 Home</option>
+                                <option value="💄">💄 Beauty</option>
+                                <option value="⚽">⚽ Sports</option>
+                                <option value="🎮">🎮 Gaming</option>
+                                <option value="🎧">🎧 Audio</option>
+                                <option value="⌚">⌚ Watches</option>
+                                <option value="📚">📚 Books</option>
+                                <option value="🚗">🚗 Automotive</option>
+                            </select>
+
+                            <div
+                                class="icon-preview"
+                                id="iconPreview"
+                                aria-label="Preview ikon"
+                            >
+                                📱
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Active -->
+                    <div class="form-group checkbox-group">
+
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="is_active"
+                                id="categoryActive"
+                                checked
+                            >
+
+                            ✅ Kategori Aktif
+                        </label>
+
+                    </div>
+
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-gradient"
+                        >
+                            💾 Simpan
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            onclick="hideCategoryForm()"
+                        >
+                            Batal
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- ==================== CATEGORIES TABLE ==================== -->
+            <div class="table-responsive">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Ikon</th>
+                            <th>Nama (EN)</th>
+                            <th>Nama (ID)</th>
+                            <th>Jumlah Produk</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="categoriesTable">
+                        <!-- Categories loaded dynamically -->
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- ==================== DELETE MODAL ==================== -->
+    <div
+        class="modal"
+        id="deleteModal"
+        style="display: none;"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteModalTitle"
+    >
+
+        <div class="modal-content">
+
+            <h3 id="deleteModalTitle">
+                ⚠️ Hapus Kategori?
+            </h3>
+
+            <p id="deleteModalMessage">
+                Apakah Anda yakin ingin menghapus kategori ini?
+            </p>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    onclick="confirmDelete()"
+                >
+                    🗑️ Hapus
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="closeModal()"
+                >
+                    Batal
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================== ADMIN JS ==================== -->
+    <script src="../assets/js/language.js"></script>
+    <script src="../assets/js/admin.js"></script>
+
+
+    <!-- ==================== CATEGORY PAGE JS ==================== -->
+    <script>
+        'use strict';
+
+        /* =========================================
+           AUTH
+        ========================================= */
+
+        if (sessionStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.replace('login.html');
+        }
+
+
+        /* =========================================
+           STATE
+        ========================================= */
+
+        let deleteCategoryId = null;
+        let categories = [];
+        let products = [];
+
+
+        /* =========================================
+           DOM READY
+        ========================================= */
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            loadProducts();
+            loadCategories();
+
+            const iconSelect = document.getElementById('categoryIcon');
+
+            if (iconSelect) {
+                iconSelect.addEventListener('change', updateIconPreview);
+            }
+
+        });
+
+
+        /* =========================================
+           LOGOUT
+        ========================================= */
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.replace('login.html');
+        }
+
+
+        /* =========================================
+           LOCAL STORAGE HELPERS
+        ========================================= */
+
+        function readLocalStorage(key, fallback = []) {
+
+            try {
+
+                const value = localStorage.getItem(key);
+
+                if (!value) {
+                    return fallback;
+                }
+
+                const parsed = JSON.parse(value);
+
+                return Array.isArray(parsed) ? parsed : fallback;
+
+            } catch (error) {
+
+                console.error(
+                    `Failed to read localStorage "${key}":`,
+                    error
+                );
+
+                return fallback;
+            }
+        }
+
+
+        function writeLocalStorage(key, value) {
+
+            try {
+
+                localStorage.setItem(
+                    key,
+                    JSON.stringify(value)
+                );
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    `Failed to write localStorage "${key}":`,
+                    error
+                );
+
+                alert(
+                    '❌ Gagal menyimpan data. Silakan coba lagi.'
+                );
+
+                return false;
+            }
+        }
+
+
+        /* =========================================
+           LOAD PRODUCTS
+        ========================================= */
+
+        function loadProducts() {
+
+            products = readLocalStorage('products', []);
+
+        }
+
+
+        /* =========================================
+           LOAD CATEGORIES
+        ========================================= */
+
+        function loadCategories() {
+
+            categories = readLocalStorage('categories', []);
+
+            renderCategories();
+
+        }
+
+
+        /* =========================================
+           RENDER CATEGORIES
+        ========================================= */
+
+        function renderCategories() {
+
+            const tbody = document.getElementById(
+                'categoriesTable'
+            );
+
+            if (!tbody) {
+                return;
+            }
+
+            tbody.innerHTML = '';
+
+
+            if (categories.length === 0) {
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="6"
+                            style="
+                                text-align: center;
+                                padding: 40px;
+                            "
+                        >
+                            Belum ada kategori.
+                            Klik "Tambah Kategori"
+                            untuk menambahkan.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            categories.forEach(function (category) {
+
+                const productCount = products.filter(function (product) {
+
+                    return String(product.category_id) ===
+                           String(category.id);
+
+                }).length;
+
+
+                const categoryId = Number(category.id);
+
+                const icon = category.icon || '📁';
+
+                const nameEn = escapeHtml(
+                    category.name_en || '-'
+                );
+
+                const nameId = escapeHtml(
+                    category.name_id || '-'
+                );
+
+
+                const isActive =
+                    category.is_active === true ||
+                    category.is_active === 1 ||
+                    category.is_active === 'true';
+
+
+                const statusClass =
+                    isActive
+                        ? 'badge-success'
+                        : 'badge-danger';
+
+
+                const statusText =
+                    isActive
+                        ? 'Aktif'
+                        : 'Nonaktif';
+
+
+                tbody.insertAdjacentHTML(
+                    'beforeend',
+                    `
+                    <tr>
+
+                        <td style="font-size: 24px;">
+                            ${escapeHtml(icon)}
+                        </td>
+
+                        <td>
+                            ${nameEn}
+                        </td>
+
+                        <td>
+                            ${nameId}
+                        </td>
+
+                        <td>
+                            ${productCount} produk
+                        </td>
+
+                        <td>
+                            <span class="badge ${statusClass}">
+                                ${statusText}
+                            </span>
+                        </td>
+
+                        <td class="action-buttons">
+
+                            <button
+                                type="button"
+                                class="btn-icon btn-edit"
+                                onclick="editCategory(${categoryId})"
+                                title="Edit"
+                                aria-label="Edit kategori"
+                            >
+                                ✏️
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn-icon btn-delete"
+                                onclick="showDeleteModal(${categoryId})"
+                                title="Hapus"
+                                aria-label="Hapus kategori"
+                            >
+                                🗑️
+                            </button>
+
+                        </td>
+
+                    </tr>
+                    `
+                );
+
+            });
+
+        }
+
+
+        /* =========================================
+           ESCAPE HTML
+        ========================================= */
+
+        function escapeHtml(value) {
+
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+        }
+
+
+        /* =========================================
+           GENERATE ID
+        ========================================= */
+
+        function generateCategoryId() {
+
+            if (categories.length === 0) {
+                return 1;
+            }
+
+            const numericIds = categories
+                .map(function (category) {
+                    return Number(category.id);
+                })
+                .filter(function (id) {
+                    return Number.isFinite(id);
+                });
+
+
+            if (numericIds.length === 0) {
+                return 1;
+            }
+
+
+            return Math.max(...numericIds) + 1;
+
+        }
+
+
+        /* =========================================
+           ICON PREVIEW
+        ========================================= */
+
+        function updateIconPreview() {
+
+            const select =
+                document.getElementById('categoryIcon');
+
+            const preview =
+                document.getElementById('iconPreview');
+
+
+            if (!select || !preview) {
+                return;
+            }
+
+
+            preview.textContent =
+                select.value || '📁';
+
+        }
+
+
+        /* =========================================
+           SHOW ADD FORM
+        ========================================= */
+
+        function showAddCategoryForm() {
+
+            const container =
+                document.getElementById(
+                    'categoryFormContainer'
+                );
+
+            const form =
+                document.getElementById('categoryForm');
+
+
+            if (!container || !form) {
+                return;
+            }
+
+
+            container.style.display = 'block';
+
+
+            document.getElementById(
+                'formTitle'
+            ).textContent =
+                'Tambah Kategori Baru';
+
+
+            form.reset();
+
+
+            document.getElementById(
+                'categoryId'
+            ).value = '';
+
+
+            document.getElementById(
+                'categoryIcon'
+            ).value = '📱';
+
+
+            document.getElementById(
+                'iconPreview'
+            ).textContent = '📱';
+
+
+            document.getElementById(
+                'categoryActive'
+            ).checked = true;
+
+
+            scrollToForm();
+
+        }
+
+
+        /* =========================================
+           HIDE FORM
+        ========================================= */
+
+        function hideCategoryForm() {
+
+            const container =
+                document.getElementById(
+                    'categoryFormContainer'
+                );
+
+
+            if (!container) {
+                return;
+            }
+
+
+            container.style.display = 'none';
+
+        }
+
+
+        /* =========================================
+           SCROLL TO FORM
+        ========================================= */
+
+        function scrollToForm() {
+
+            const container =
+                document.getElementById(
+                    'categoryFormContainer'
+                );
+
+
+            if (!container) {
+                return;
+            }
+
+
+            container.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+        }
+
+
+        /* =========================================
+           EDIT CATEGORY
+        ========================================= */
+
+        function editCategory(id) {
+
+            const category = categories.find(
+                function (item) {
+                    return String(item.id) === String(id);
+                }
+            );
+
+
+            if (!category) {
+
+                alert(
+                    '❌ Kategori tidak ditemukan.'
+                );
+
+                return;
+            }
+
+
+            const container =
+                document.getElementById(
+                    'categoryFormContainer'
+                );
+
+
+            container.style.display = 'block';
+
+
+            document.getElementById(
+                'formTitle'
+            ).textContent =
+                'Edit Kategori';
+
+
+            document.getElementById(
+                'categoryId'
+            ).value =
+                category.id;
+
+
+            document.getElementById(
+                'categoryNameEn'
+            ).value =
+                category.name_en || '';
+
+
+            document.getElementById(
+                'categoryNameId'
+            ).value =
+                category.name_id || '';
+
+
+            document.getElementById(
+                'categoryIcon'
+            ).value =
+                category.icon || '📱';
+
+
+            document.getElementById(
+                'iconPreview'
+            ).textContent =
+                category.icon || '📱';
+
+
+            document.getElementById(
+                'categoryActive'
+            ).checked =
+                category.is_active === true ||
+                category.is_active === 1 ||
+                category.is_active === 'true';
+
+
+            scrollToForm();
+
+        }
+
+
+        /* =========================================
+           SAVE CATEGORY
+        ========================================= */
+
+        function saveCategory(event) {
+
+            event.preventDefault();
+
+
+            const id =
+                document.getElementById(
+                    'categoryId'
+                ).value.trim();
+
+
+            const name_en =
+                document.getElementById(
+                    'categoryNameEn'
+                ).value.trim();
+
+
+            const name_id =
+                document.getElementById(
+                    'categoryNameId'
+                ).value.trim();
+
+
+            const icon =
+                document.getElementById(
+                    'categoryIcon'
+                ).value;
+
+
+            const is_active =
+                document.getElementById(
+                    'categoryActive'
+                ).checked;
+
+
+            /* Validation */
+
+            if (!name_en || !name_id || !icon) {
+
+                alert(
+                    '⚠️ Silakan lengkapi semua field kategori.'
+                );
+
+                return;
+            }
+
+
+            /* Duplicate name check */
+
+            const duplicate = categories.some(
+                function (category) {
+
+                    if (
+                        id &&
+                        String(category.id) === String(id)
+                    ) {
+                        return false;
+                    }
+
+
+                    return (
+                        String(category.name_en || '')
+                            .trim()
+                            .toLowerCase() ===
+                        name_en.toLowerCase()
+                    ) || (
+                        String(category.name_id || '')
+                            .trim()
+                            .toLowerCase() ===
+                        name_id.toLowerCase()
+                    );
+
+                }
+            );
+
+
+            if (duplicate) {
+
+                alert(
+                    '⚠️ Kategori dengan nama tersebut sudah ada.'
+                );
+
+                return;
+            }
+
+
+            /* Edit */
+
+            if (id) {
+
+                const index = categories.findIndex(
+                    function (category) {
+                        return String(category.id) ===
+                               String(id);
+                    }
+                );
+
+
+                if (index === -1) {
+
+                    alert(
+                        '❌ Kategori tidak ditemukan.'
+                    );
+
+                    return;
+                }
+
+
+                categories[index] = {
+                    ...categories[index],
+                    name_en: name_en,
+                    name_id: name_id,
+                    icon: icon,
+                    is_active: is_active
+                };
+
+            }
+
+
+            /* Add */
+
+            else {
+
+                categories.push({
+
+                    id: generateCategoryId(),
+
+                    name_en: name_en,
+
+                    name_id: name_id,
+
+                    icon: icon,
+
+                    is_active: is_active,
+
+                    created_at:
+                        new Date().toISOString()
+
+                });
+
+            }
+
+
+            if (!writeLocalStorage(
+                'categories',
+                categories
+            )) {
+                return;
+            }
+
+
+            hideCategoryForm();
+
+            loadCategories();
+
+
+            alert(
+                '✅ Kategori berhasil disimpan!'
+            );
+
+        }
+
+
+        /* =========================================
+           DELETE MODAL
+        ========================================= */
+
+        function showDeleteModal(id) {
+
+            const category = categories.find(
+                function (item) {
+                    return String(item.id) === String(id);
+                }
+            );
+
+
+            if (!category) {
+                return;
+            }
+
+
+            deleteCategoryId = id;
+
+
+            const linkedProducts =
+                products.filter(
+                    function (product) {
+                        return String(product.category_id) ===
+                               String(id);
+                    }
+                ).length;
+
+
+            const message =
+                document.getElementById(
+                    'deleteModalMessage'
+                );
+
+
+            if (linkedProducts > 0) {
+
+                message.textContent =
+                    `Kategori "${category.name_id || category.name_en}" memiliki ${linkedProducts} produk. Jika dihapus, produk tersebut tidak akan terhapus tetapi akan kehilangan kategorinya. Apakah Anda yakin?`;
+
+            } else {
+
+                message.textContent =
+                    `Apakah Anda yakin ingin menghapus kategori "${category.name_id || category.name_en}"?`;
+
+            }
+
+
+            document.getElementById(
+                'deleteModal'
+            ).style.display = 'flex';
+
+        }
+
+
+        /* =========================================
+           CLOSE MODAL
+        ========================================= */
+
+        function closeModal() {
+
+            document.getElementById(
+                'deleteModal'
+            ).style.display = 'none';
+
+
+            deleteCategoryId = null;
+
+        }
+
+
+        /* =========================================
+           CONFIRM DELETE
+        ========================================= */
+
+        function confirmDelete() {
+
+            if (deleteCategoryId === null) {
+                return;
+            }
+
+
+            const category = categories.find(
+                function (item) {
+                    return String(item.id) ===
+                           String(deleteCategoryId);
+                }
+            );
+
+
+            if (!category) {
+
+                closeModal();
+
+                return;
+            }
+
+
+            const linkedProducts =
+                products.filter(
+                    function (product) {
+                        return String(product.category_id) ===
+                               String(deleteCategoryId);
+                    }
+                );
+
+
+            /*
+             * Keep products intact.
+             * Only remove the category reference.
+             */
+
+            if (linkedProducts.length > 0) {
+
+                products = products.map(
+                    function (product) {
+
+                        if (
+                            String(product.category_id) ===
+                            String(deleteCategoryId)
+                        ) {
+
+                            const updatedProduct = {
+                                ...product
+                            };
+
+                            delete updatedProduct.category_id;
+
+                            return updatedProduct;
+                        }
+
+
+                        return product;
+
+                    }
+                );
+
+
+                if (!writeLocalStorage(
+                    'products',
+                    products
+                )) {
+                    return;
+                }
+
+            }
+
+
+            /* Remove category */
+
+            categories = categories.filter(
+                function (item) {
+                    return String(item.id) !==
+                           String(deleteCategoryId);
+                }
+            );
+
+
+            if (!writeLocalStorage(
+                'categories',
+                categories
+            )) {
+                return;
+            }
+
+
+            loadCategories();
+
+            closeModal();
+
+
+            alert(
+                '🗑️ Kategori berhasil dihapus!'
+            );
+
+        }
+
+
+        /* =========================================
+           CLOSE MODAL WHEN CLICKING OUTSIDE
+        ========================================= */
+
+        document.addEventListener(
+            'click',
+            function (event) {
+
+                const modal =
+                    document.getElementById(
+                        'deleteModal'
+                    );
+
+
+                if (
+                    modal &&
+                    event.target === modal
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           ESC KEY
+        ========================================= */
+
+        document.addEventListener(
+            'keydown',
+            function (event) {
+
+                if (
+                    event.key === 'Escape' &&
+                    deleteCategoryId !== null
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

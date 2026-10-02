@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard - Market Flow</title>
+
+    <meta
+        name="description"
+        content="Market Flow Admin Dashboard"
+    >
+
+    <meta
+        name="robots"
+        content="noindex, nofollow"
+    >
+
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="../assets/images/logo.svg"
+    >
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="../assets/css/main.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/admin.css"
+    >
+</head>
+
+
+<body class="admin-body">
+
+    <!-- ==========================================
+         ADMIN HEADER
+    =========================================== -->
+    <header class="admin-header">
+
+        <div class="admin-header-content">
+
+            <!-- Brand -->
+            <a
+                href="dashboard.html"
+                class="admin-brand"
+                aria-label="Market Flow Admin Dashboard"
+            >
+                <img
+                    src="../assets/images/logo.svg"
+                    alt="Market Flow"
+                    class="admin-logo-small"
+                >
+
+                <span>Admin Flow</span>
+            </a>
+
+
+            <!-- Language Switcher -->
+            <div class="language-toggle" role="group" aria-label="Language selection">
+                <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
+                <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
+            </div>
+
+            <!-- User -->
+            <div class="admin-user">
+
+                <span
+                    id="adminUsername"
+                    class="admin-username"
+                >
+                    admin
+                </span>
+
+                <button
+                    type="button"
+                    onclick="logout()"
+                    class="btn-logout"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==========================================
+         ADMIN LAYOUT
+    =========================================== -->
+    <div class="admin-layout">
+
+
+        <!-- ======================================
+             SIDEBAR
+        ======================================= -->
+        <aside class="admin-sidebar">
+
+            <nav
+                class="admin-nav"
+                aria-label="Admin navigation"
+            >
+
+                <!-- Dashboard -->
+                <a
+                    href="dashboard.html"
+                    class="active"
+                    aria-current="page"
+                >
+                    <span
+                        class="nav-icon"
+                        aria-hidden="true"
+                    >
+                        📊
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+                </a>
+
+
+                <!-- Products -->
+                <a href="products.html">
+
+                    <span
+                        class="nav-icon"
+                        aria-hidden="true"
+                    >
+                        📦
+                    </span>
+
+                    <span>
+                        Produk
+                    </span>
+
+                </a>
+
+
+                <!-- Categories -->
+                <a href="category.html">
+
+                    <span
+                        class="nav-icon"
+                        aria-hidden="true"
+                    >
+                        📁
+                    </span>
+
+                    <span>
+                        Kategori
+                    </span>
+
+                </a>
+
+
+                <!-- Statistics -->
+                <a href="stats.html">
+
+                    <span
+                        class="nav-icon"
+                        aria-hidden="true"
+                    >
+                        📈
+                    </span>
+
+                    <span>
+                        Statistik
+                    </span>
+
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- ======================================
+             MAIN CONTENT
+        ======================================= -->
+        <main class="admin-main">
+
+            <!-- Page Header -->
+            <div class="admin-page-header">
+
+                <div>
+                    <p class="admin-page-eyebrow">
+                        Market Flow
+                    </p>
+
+                    <h1>
+                        Dashboard
+                    </h1>
+
+                    <p class="admin-page-description">
+                        Kelola produk, kategori, dan pantau performa website.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 STATS
+            =================================== -->
+            <section
+                class="stats-grid"
+                aria-label="Dashboard statistics"
+            >
+
+                <!-- Products -->
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon"
+                        aria-hidden="true"
+                    >
+                        📦
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3 id="totalProducts">
+                            0
+                        </h3>
+
+                        <p>
+                            Total Produk
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Views -->
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon"
+                        aria-hidden="true"
+                    >
+                        👁️
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3 id="totalViews">
+                            0
+                        </h3>
+
+                        <p>
+                            Total Views
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Clicks -->
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon"
+                        aria-hidden="true"
+                    >
+                        🖱️
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3 id="totalClicks">
+                            0
+                        </h3>
+
+                        <p>
+                            Shopee Clicks
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Categories -->
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon"
+                        aria-hidden="true"
+                    >
+                        📁
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3 id="totalCategories">
+                            0
+                        </h3>
+
+                        <p>
+                            Kategori
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================
+                 QUICK ACTIONS
+            =================================== -->
+            <section class="quick-actions">
+
+                <div class="admin-section-header">
+
+                    <div>
+
+                        <h2>
+                            Aksi Cepat
+                        </h2>
+
+                        <p>
+                            Tambahkan konten baru ke Market Flow.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="action-buttons">
+
+                    <a
+                        href="products.html?action=add"
+                        class="btn btn-gradient"
+                    >
+                        <span aria-hidden="true">
+                            +
+                        </span>
+
+                        Tambah Produk
+                    </a>
+
+
+                    <a
+                        href="category.html?action=add"
+                        class="btn btn-secondary"
+                    >
+                        <span aria-hidden="true">
+                            +
+                        </span>
+
+                        Tambah Kategori
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================
+                 RECENT PRODUCTS
+            =================================== -->
+            <section class="recent-section">
+
+                <div class="admin-section-header">
+
+                    <div>
+
+                        <h2>
+                            Produk Terbaru
+                        </h2>
+
+                        <p>
+                            Produk yang baru ditambahkan ke katalog.
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="products.html"
+                        class="admin-view-all"
+                    >
+                        Lihat Semua
+                    </a>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table class="admin-table">
+
+                        <caption class="sr-only">
+                            Daftar produk terbaru
+                        </caption>
+
+                        <thead>
+
+                            <tr>
+
+                                <th scope="col">
+                                    Gambar
+                                </th>
+
+                                <th scope="col">
+                                    Nama Produk
+                                </th>
+
+                                <th scope="col">
+                                    Harga
+                                </th>
+
+                                <th scope="col">
+                                    Kategori
+                                </th>
+
+                                <th scope="col">
+                                    Status
+                                </th>
+
+                                <th scope="col">
+                                    Aksi
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="recentProductsTable">
+
+                            <!-- Loaded dynamically -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- ==========================================
+         ADMIN JAVASCRIPT
+    =========================================== -->
+    <script src="../assets/js/language.js"></script>
+    <script src="../assets/js/admin.js"></script>
+
+
+    <script>
+        // ========================================
+        // AUTH CHECK
+        // ========================================
+
+        if (
+            sessionStorage.getItem(
+                'admin_logged_in'
+            ) !== 'true'
+        ) {
+            window.location.href =
+                'login.html';
+        }
+
+
+        // ========================================
+        // LOGOUT
+        // ========================================
+
+        function logout() {
+
+            sessionStorage.clear();
+
+            window.location.href =
+                'login.html';
+        }
+
+
+        // ========================================
+        // LOAD DASHBOARD
+        // ========================================
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+                if (
+                    typeof loadDashboardStats ===
+                    'function'
+                ) {
+                    loadDashboardStats();
+                }
+
+
+                if (
+                    typeof loadRecentProducts ===
+                    'function'
+                ) {
+                    loadRecentProducts();
+                }
+
+
+                const username =
+                    document.getElementById(
+                        'adminUsername'
+                    );
+
+
+                if (username) {
+
+                    username.textContent =
+                        sessionStorage.getItem(
+                            'admin_user'
+                        ) || 'admin';
+
+                }
+
+            }
+        );
+    </script>
+
+</body>
+</html>

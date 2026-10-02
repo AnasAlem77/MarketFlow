@@ -3,7 +3,6 @@
 # ⚡ MarketFlow
 ### Premium Product Discovery Platform for Shopee
 
-<img src="path-to-banner.png" alt="MarketFlow Banner" width="100%">
 
 *A modern, dark-themed e-commerce product discovery platform featuring dual-language support, robust admin controls, and seamless Shopee integration.*
 

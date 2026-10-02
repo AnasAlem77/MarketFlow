@@ -57,6 +57,13 @@
    BASE
    ============================================ */
 
+/* Prevent horizontal overflow / page shifting on mobile */
+html,
+body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
 body.admin-body {
     margin: 0;
     min-height: 100vh;
@@ -2394,6 +2401,46 @@ body.admin-body *::after {
         animation: none;
     }
 
+}
+
+
+/* =====================================================
+   MOBILE LAYOUT ADJUSTMENTS (<= 768px)
+   Table scrolling + flexible nav/header wrapping.
+   Placed before the final mobile block so the more
+   specific "body.admin-body" rules below keep priority.
+   ===================================================== */
+@media (max-width: 768px) {
+
+    /* Tables scroll horizontally instead of breaking the container */
+    .table-responsive,
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    nav a,
+    nav .language-toggle {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    .header-wrapper,
+    header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
 }
 
 

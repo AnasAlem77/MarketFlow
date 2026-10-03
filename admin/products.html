@@ -8,10 +8,16 @@
     <meta name="robots" content="noindex, nofollow">
 
     <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
@@ -34,10 +40,32 @@
             </div>
 
             <div class="admin-user">
-                <!-- Language Switcher moved here -->
-                <div class="language-toggle" role="group" aria-label="Language selection">
-                    <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
-                    <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
+
+                <!-- Language Switcher -->
+                <div
+                    class="language-toggle"
+                    role="group"
+                    aria-label="Language selection"
+                >
+                    <button
+                        type="button"
+                        class="lang-btn"
+                        data-lang="id"
+                        aria-label="Bahasa Indonesia"
+                        aria-pressed="false"
+                    >
+                        ID
+                    </button>
+
+                    <button
+                        type="button"
+                        class="lang-btn"
+                        data-lang="en"
+                        aria-label="English"
+                        aria-pressed="false"
+                    >
+                        EN
+                    </button>
                 </div>
 
                 <span id="adminUsername">admin</span>
@@ -49,6 +77,7 @@
                 >
                     Logout
                 </button>
+
             </div>
 
         </div>
@@ -224,7 +253,7 @@
                     ========================== -->
                     <div class="form-group">
 
-                        <label>
+                        <label for="productImage">
                             Gambar Produk
                         </label>
 
@@ -234,7 +263,7 @@
                                 type="file"
                                 name="image"
                                 id="productImage"
-                                accept="image/*"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
                                 class="file-input"
                                 onchange="previewImage(this)"
                             >
@@ -255,16 +284,9 @@
                         </div>
 
                         <small>
-                            Atau masukkan URL gambar:
+                            Pilih gambar dari komputer atau galeri Anda.
+                            Maksimal 4MB.
                         </small>
-
-                        <input
-                            type="url"
-                            name="image_url"
-                            id="productImageUrl"
-                            placeholder="https://..."
-                            onchange="previewImageUrl(this.value)"
-                        >
 
                     </div>
 
@@ -299,6 +321,7 @@
                             >
 
                             ⭐ Produk Unggulan
+
                             <small>
                                 (tampil di homepage)
                             </small>
@@ -333,6 +356,7 @@
                         <button
                             type="submit"
                             class="btn btn-gradient"
+                            id="saveProductButton"
                         >
                             💾 Simpan
                         </button>
@@ -442,15 +466,21 @@
 
 
     <script>
+
         /* =====================================================
            MARKET FLOW - PRODUCT MANAGEMENT
+           PostgreSQL + Cloudflare R2
+           NO localStorage
         ===================================================== */
+
 
         // -----------------------------------------------------
         // AUTH CHECK
         // -----------------------------------------------------
 
-        if (sessionStorage.getItem('admin_logged_in') !== 'true') {
+        if (
+            sessionStorage.getItem('admin_logged_in') !== 'true'
+        ) {
             window.location.href = 'login.html';
         }
 
@@ -462,26 +492,33 @@
         let deleteProductId = null;
         let products = [];
         let categories = [];
+        let isSaving = false;
 
 
         // -----------------------------------------------------
         // DOM READY
         // -----------------------------------------------------
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener(
+            'DOMContentLoaded',
+            async function () {
 
-            loadCategories();
-            loadProducts();
+                await loadCategories();
+                await loadProducts();
 
-            const urlParams = new URLSearchParams(
-                window.location.search
-            );
+                const urlParams =
+                    new URLSearchParams(
+                        window.location.search
+                    );
 
-            if (urlParams.get('action') === 'add') {
-                showAddProductForm();
+                if (
+                    urlParams.get('action') === 'add'
+                ) {
+                    showAddProductForm();
+                }
+
             }
-
-        });
+        );
 
 
         // -----------------------------------------------------
@@ -498,35 +535,60 @@
 
 
         // -----------------------------------------------------
-        // SAFE LOCAL STORAGE READ
+        // API HELPER
         // -----------------------------------------------------
 
-        function readLocalStorage(key, fallback = []) {
+        async function fetchJson(
+            url,
+            options = {}
+        ) {
+
+            const requestOptions = {
+                ...options,
+                headers: {
+                    ...(options.body
+                        ? {
+                            'Content-Type':
+                                'application/json'
+                        }
+                        : {}),
+                    ...(options.headers || {})
+                }
+            };
+
+            const response =
+                await fetch(
+                    url,
+                    requestOptions
+                );
+
+            let data = null;
 
             try {
 
-                const value = localStorage.getItem(key);
-
-                if (!value) {
-                    return fallback;
-                }
-
-                const parsed = JSON.parse(value);
-
-                return Array.isArray(parsed)
-                    ? parsed
-                    : fallback;
+                data = await response.json();
 
             } catch (error) {
 
-                console.error(
-                    `Failed to read localStorage key: ${key}`,
-                    error
+                throw new Error(
+                    'Server returned an invalid response.'
                 );
 
-                return fallback;
+            }
+
+            if (
+                !response.ok ||
+                data.success === false
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    'Request failed.'
+                );
 
             }
+
+            return data;
 
         }
 
@@ -537,7 +599,10 @@
 
         function escapeHtml(value) {
 
-            if (value === null || value === undefined) {
+            if (
+                value === null ||
+                value === undefined
+            ) {
                 return '';
             }
 
@@ -556,7 +621,9 @@
         // -----------------------------------------------------
 
         function escapeAttribute(value) {
+
             return escapeHtml(value);
+
         }
 
 
@@ -564,39 +631,85 @@
         // LOAD CATEGORIES
         // -----------------------------------------------------
 
-        function loadCategories() {
+        async function loadCategories() {
 
-            categories = readLocalStorage(
-                'categories',
-                []
-            );
+            try {
 
-            const select =
-                document.getElementById('productCategory');
+                const data =
+                    await fetchJson(
+                        '../api/categories'
+                    );
 
-            if (!select) {
-                return;
-            }
+                categories =
+                    data.categories || [];
 
-            select.innerHTML =
-                '<option value="">Pilih Kategori</option>';
+                const select =
+                    document.getElementById(
+                        'productCategory'
+                    );
 
-            categories.forEach(function (category) {
-
-                if (!category || category.id === undefined) {
+                if (!select) {
                     return;
                 }
 
-                const option =
-                    document.createElement('option');
+                select.innerHTML =
+                    '<option value="">Pilih Kategori</option>';
 
-                option.value = category.id;
-                option.textContent =
-                    category.name || 'Tanpa Nama';
+                categories.forEach(
+                    function (category) {
 
-                select.appendChild(option);
+                        if (
+                            !category ||
+                            category.id === undefined
+                        ) {
+                            return;
+                        }
 
-            });
+                        const option =
+                            document.createElement(
+                                'option'
+                            );
+
+                        option.value =
+                            category.id;
+
+                        option.textContent =
+                            category.name_id ||
+                            category.name_en ||
+                            'Tanpa Nama';
+
+                        select.appendChild(
+                            option
+                        );
+
+                    }
+                );
+
+            } catch (error) {
+
+                console.error(
+                    'Failed to load categories:',
+                    error
+                );
+
+                const select =
+                    document.getElementById(
+                        'productCategory'
+                    );
+
+                if (select) {
+
+                    select.innerHTML =
+                        '<option value="">Gagal memuat kategori</option>';
+
+                }
+
+                alert(
+                    'Gagal memuat kategori: ' +
+                    error.message
+                );
+
+            }
 
         }
 
@@ -605,14 +718,37 @@
         // LOAD PRODUCTS
         // -----------------------------------------------------
 
-        function loadProducts() {
+        async function loadProducts() {
 
-            products = readLocalStorage(
-                'products',
-                []
-            );
+            try {
 
-            renderProducts();
+                const data =
+                    await fetchJson(
+                        '../api/products'
+                    );
+
+                products =
+                    data.products || [];
+
+                renderProducts();
+
+            } catch (error) {
+
+                console.error(
+                    'Failed to load products:',
+                    error
+                );
+
+                products = [];
+
+                renderProducts();
+
+                alert(
+                    'Gagal memuat produk: ' +
+                    error.message
+                );
+
+            }
 
         }
 
@@ -624,7 +760,9 @@
         function renderProducts() {
 
             const tbody =
-                document.getElementById('productsTable');
+                document.getElementById(
+                    'productsTable'
+                );
 
             if (!tbody) {
                 return;
@@ -632,8 +770,6 @@
 
             tbody.innerHTML = '';
 
-
-            // EMPTY STATE
             if (products.length === 0) {
 
                 tbody.innerHTML = `
@@ -656,139 +792,156 @@
 
             }
 
+            products.forEach(
+                function (product) {
 
-            // PRODUCTS
-            products.forEach(function (product) {
+                    const category =
+                        categories.find(
+                            function (categoryItem) {
 
-                const category = categories.find(
-                    function (categoryItem) {
-                        return String(categoryItem.id) ===
-                            String(product.category_id);
-                    }
-                );
+                                return (
+                                    String(
+                                        categoryItem.id
+                                    ) ===
+                                    String(
+                                        product.category_id
+                                    )
+                                );
 
-                const categoryName =
-                    category
-                        ? category.name
-                        : '-';
-
-
-                const priceNumber =
-                    Number(product.price) || 0;
-
-                const priceFormatted =
-                    'Rp ' +
-                    priceNumber.toLocaleString('id-ID');
-
-
-                const productName =
-                    escapeHtml(product.name || 'Tanpa Nama');
-
-
-                const image =
-                    product.image
-                        ? escapeAttribute(product.image)
-                        : '../assets/images/placeholder.svg';
-
-
-                const imageAlt =
-                    escapeAttribute(
-                        product.name || 'Produk'
-                    );
-
-
-                const id =
-                    Number(product.id);
-
-
-                const isFeatured =
-                    product.is_featured === true ||
-                    product.is_featured === 1 ||
-                    product.is_featured === '1';
-
-
-                const isActive =
-                    product.is_active === true ||
-                    product.is_active === 1 ||
-                    product.is_active === '1';
-
-
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td>
-                        <img
-                            src="${image}"
-                            alt="${imageAlt}"
-                            class="product-thumb"
-                            loading="lazy"
-                            onerror="
-                                this.onerror=null;
-                                this.src='../assets/images/placeholder.svg';
-                            "
-                        >
-                    </td>
-
-                    <td>
-                        ${productName}
-                    </td>
-
-                    <td>
-                        ${priceFormatted}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(categoryName)}
-                    </td>
-
-                    <td>
-                        ${isFeatured ? '⭐' : '-'}
-                    </td>
-
-                    <td>
-                        <span
-                            class="badge ${
-                                isActive
-                                    ? 'badge-success'
-                                    : 'badge-danger'
-                            }"
-                        >
-                            ${
-                                isActive
-                                    ? 'Aktif'
-                                    : 'Nonaktif'
                             }
-                        </span>
-                    </td>
+                        );
 
-                    <td class="action-buttons">
+                    const categoryName =
+                        product.category_name_id ||
+                        product.category_name_en ||
+                        (
+                            category
+                                ? (
+                                    category.name_id ||
+                                    category.name_en
+                                )
+                                : '-'
+                        );
 
-                        <button
-                            type="button"
-                            class="btn-icon btn-edit"
-                            onclick="editProduct(${id})"
-                            title="Edit"
-                            aria-label="Edit produk"
-                        >
-                            ✏️
-                        </button>
+                    const priceNumber =
+                        Number(product.price) || 0;
 
-                        <button
-                            type="button"
-                            class="btn-icon btn-delete"
-                            onclick="showDeleteModal(${id})"
-                            title="Hapus"
-                            aria-label="Hapus produk"
-                        >
-                            🗑️
-                        </button>
+                    const priceFormatted =
+                        'Rp ' +
+                        priceNumber.toLocaleString(
+                            'id-ID'
+                        );
 
-                    </td>
-                `;
+                    const productName =
+                        escapeHtml(
+                            product.name ||
+                            'Tanpa Nama'
+                        );
 
-                tbody.appendChild(row);
+                    const image =
+                        product.image
+                            ? escapeAttribute(
+                                product.image
+                            )
+                            : '../assets/images/placeholder.svg';
 
-            });
+                    const imageAlt =
+                        escapeAttribute(
+                            product.name ||
+                            'Produk'
+                        );
+
+                    const id =
+                        Number(product.id);
+
+                    const isFeatured =
+                        product.is_featured === true ||
+                        product.is_featured === 1 ||
+                        product.is_featured === '1';
+
+                    const isActive =
+                        product.is_active === true ||
+                        product.is_active === 1 ||
+                        product.is_active === '1';
+
+                    const row =
+                        document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td>
+                            <img
+                                src="${image}"
+                                alt="${imageAlt}"
+                                class="product-thumb"
+                                loading="lazy"
+                                onerror="
+                                    this.onerror=null;
+                                    this.src='../assets/images/placeholder.svg';
+                                "
+                            >
+                        </td>
+
+                        <td>
+                            ${productName}
+                        </td>
+
+                        <td>
+                            ${priceFormatted}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(categoryName)}
+                        </td>
+
+                        <td>
+                            ${isFeatured ? '⭐' : '-'}
+                        </td>
+
+                        <td>
+                            <span
+                                class="${
+                                    isActive
+                                        ? 'badge badge-success'
+                                        : 'badge badge-danger'
+                                }"
+                            >
+                                ${
+                                    isActive
+                                        ? 'Aktif'
+                                        : 'Nonaktif'
+                                }
+                            </span>
+                        </td>
+
+                        <td class="action-buttons">
+
+                            <button
+                                type="button"
+                                class="btn-icon btn-edit"
+                                onclick="editProduct(${id})"
+                                title="Edit"
+                                aria-label="Edit produk"
+                            >
+                                ✏️
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn-icon btn-delete"
+                                onclick="showDeleteModal(${id})"
+                                title="Hapus"
+                                aria-label="Hapus produk"
+                            >
+                                🗑️
+                            </button>
+
+                        </td>
+                    `;
+
+                    tbody.appendChild(row);
+
+                }
+            );
 
         }
 
@@ -824,23 +977,31 @@
                     'imagePreview'
                 );
 
+            const imageInput =
+                document.getElementById(
+                    'productImage'
+                );
 
-            if (!container || !form) {
+            if (
+                !container ||
+                !form
+            ) {
                 return;
             }
 
-
-            container.style.display = 'block';
+            container.style.display =
+                'block';
 
             title.textContent =
                 'Tambah Produk Baru';
 
-
             form.reset();
-
 
             productId.value = '';
 
+            if (imageInput) {
+                imageInput.value = '';
+            }
 
             imagePreview.innerHTML = `
                 <span>
@@ -848,12 +1009,9 @@
                 </span>
             `;
 
-
-            // Checkbox active should remain enabled
             document.getElementById(
                 'productActive'
             ).checked = true;
-
 
             scrollToForm();
 
@@ -872,7 +1030,10 @@
                 );
 
             if (container) {
-                container.style.display = 'none';
+
+                container.style.display =
+                    'none';
+
             }
 
         }
@@ -885,44 +1046,50 @@
         function editProduct(id) {
 
             const product =
-                products.find(function (item) {
+                products.find(
+                    function (item) {
 
-                    return String(item.id) ===
-                        String(id);
+                        return (
+                            String(item.id) ===
+                            String(id)
+                        );
 
-                });
-
+                    }
+                );
 
             if (!product) {
-                alert('Produk tidak ditemukan.');
-                return;
-            }
 
+                alert(
+                    'Produk tidak ditemukan.'
+                );
+
+                return;
+
+            }
 
             document.getElementById(
                 'productFormContainer'
             ).style.display = 'block';
 
-
             document.getElementById(
                 'formTitle'
-            ).textContent = 'Edit Produk';
-
+            ).textContent =
+                'Edit Produk';
 
             document.getElementById(
                 'productId'
-            ).value = product.id;
-
+            ).value =
+                product.id;
 
             document.getElementById(
                 'productName'
-            ).value = product.name || '';
-
+            ).value =
+                product.name || '';
 
             document.getElementById(
                 'productPrice'
-            ).value = product.price || '';
-
+            ).value =
+                product.price || '';
 
             document.getElementById(
                 'productCategory'
@@ -931,25 +1098,15 @@
                     ? product.category_id
                     : '';
 
-
             document.getElementById(
                 'productShopeeLink'
             ).value =
                 product.shopee_link || '';
 
-
-            // Keep image URL if available
-            document.getElementById(
-                'productImageUrl'
-            ).value =
-                product.image || '';
-
-
             document.getElementById(
                 'productDescription'
             ).value =
                 product.description || '';
-
 
             document.getElementById(
                 'productFeatured'
@@ -958,7 +1115,6 @@
                 product.is_featured === 1 ||
                 product.is_featured === '1';
 
-
             document.getElementById(
                 'productActive'
             ).checked =
@@ -966,12 +1122,14 @@
                 product.is_active === 1 ||
                 product.is_active === '1';
 
+            document.getElementById(
+                'productImage'
+            ).value = '';
 
             const preview =
                 document.getElementById(
                     'imagePreview'
                 );
-
 
             if (product.image) {
 
@@ -979,11 +1137,7 @@
                     <img
                         src="${escapeAttribute(product.image)}"
                         alt="Preview"
-                        onerror="
-                            this.onerror=null;
-                            this.parentElement.innerHTML =
-                            '<span>⚠️ Gambar tidak tersedia</span>';
-                        "
+                        onerror="handleImagePreviewError(this)"
                     >
                 `;
 
@@ -996,7 +1150,6 @@
                 `;
 
             }
-
 
             scrollToForm();
 
@@ -1018,15 +1171,17 @@
                 return;
             }
 
+            setTimeout(
+                function () {
 
-            setTimeout(function () {
+                    container.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
 
-                container.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-
-            }, 50);
+                },
+                50
+            );
 
         }
 
@@ -1043,14 +1198,16 @@
                 );
 
             if (input) {
+
                 input.click();
+
             }
 
         }
 
 
         // -----------------------------------------------------
-        // IMAGE PREVIEW - FILE
+        // IMAGE PREVIEW
         // -----------------------------------------------------
 
         function previewImage(input) {
@@ -1063,16 +1220,22 @@
                 return;
             }
 
-
             const file =
                 input.files[0];
 
+            const allowedTypes = [
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/gif'
+            ];
 
-            // Basic image validation
-            if (!file.type.startsWith('image/')) {
+            if (
+                !allowedTypes.includes(file.type)
+            ) {
 
                 alert(
-                    'File yang dipilih bukan gambar.'
+                    'Format gambar tidak didukung. Gunakan JPG, PNG, WEBP, atau GIF.'
                 );
 
                 input.value = '';
@@ -1081,91 +1244,51 @@
 
             }
 
+            const maxSize =
+                4 * 1024 * 1024;
 
-            const reader =
-                new FileReader();
-
-
-            reader.onload = function (event) {
-
-                const preview =
-                    document.getElementById(
-                        'imagePreview'
-                    );
-
-
-                preview.innerHTML = `
-                    <img
-                        src="${event.target.result}"
-                        alt="Preview"
-                    >
-                `;
-
-
-                // Clear URL when file is selected
-                document.getElementById(
-                    'productImageUrl'
-                ).value = '';
-
-            };
-
-
-            reader.onerror = function () {
+            if (file.size > maxSize) {
 
                 alert(
-                    'Gagal membaca gambar.'
+                    'Ukuran gambar terlalu besar. Maksimal 4MB.'
                 );
 
-            };
-
-
-            reader.readAsDataURL(file);
-
-        }
-
-
-        // -----------------------------------------------------
-        // IMAGE PREVIEW - URL
-        // -----------------------------------------------------
-
-        function previewImageUrl(url) {
-
-            const preview =
-                document.getElementById(
-                    'imagePreview'
-                );
-
-
-            if (!url || !url.trim()) {
-
-                preview.innerHTML = `
-                    <span>
-                        📷 Klik untuk upload gambar
-                    </span>
-                `;
+                input.value = '';
 
                 return;
 
             }
 
+            const reader =
+                new FileReader();
 
-            const safeUrl =
-                url.trim();
+            reader.onload =
+                function (event) {
 
+                    const preview =
+                        document.getElementById(
+                            'imagePreview'
+                        );
 
-            preview.innerHTML = `
-                <img
-                    src="${escapeAttribute(safeUrl)}"
-                    alt="Preview"
-                    onerror="handleImagePreviewError(this)"
-                >
-            `;
+                    preview.innerHTML = `
+                        <img
+                            src="${event.target.result}"
+                            alt="Preview"
+                        >
+                    `;
 
+                };
 
-            // URL selected, clear uploaded file
-            document.getElementById(
-                'productImage'
-            ).value = '';
+            reader.onerror =
+                function () {
+
+                    alert(
+                        'Gagal membaca gambar.'
+                    );
+
+                };
+
+            reader.readAsDataURL(file);
 
         }
 
@@ -1180,10 +1303,9 @@
                 return;
             }
 
-
             image.parentElement.innerHTML = `
                 <span>
-                    ⚠️ URL gambar tidak valid
+                    ⚠️ Gambar tidak dapat ditampilkan
                 </span>
             `;
 
@@ -1191,25 +1313,88 @@
 
 
         // -----------------------------------------------------
+        // UPLOAD IMAGE TO R2
+        // -----------------------------------------------------
+
+        async function uploadImageToR2(file) {
+            if (!file) return null;
+
+            const allowedTypes = [
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/gif'
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+                throw new Error('Format gambar tidak didukung.');
+            }
+
+            const maxSize = 4 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+                throw new Error('Ukuran gambar terlalu besar. Maksimal 4MB.');
+            }
+
+            const data = await fetchJson(
+                '../api/upload-image',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        fileName: file.name,
+                        contentType: file.type,
+                        fileSize: file.size
+                    })
+                }
+            );
+
+            if (!data.uploadUrl || !data.publicUrl) {
+                throw new Error(
+                    'Server tidak mengembalikan URL upload gambar.'
+                );
+            }
+
+            const uploadResponse = await fetch(
+                data.uploadUrl,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': file.type
+                    },
+                    body: file
+                }
+            );
+
+            if (!uploadResponse.ok) {
+                throw new Error(
+                    'Gagal mengupload gambar ke Cloudflare R2.'
+                );
+            }
+
+            return data.publicUrl;
+        }
+
+        // -----------------------------------------------------
         // SAVE PRODUCT
         // -----------------------------------------------------
 
-        function saveProduct(event) {
+        async function saveProduct(event) {
 
             event.preventDefault();
 
+            if (isSaving) {
+                return;
+            }
 
             const id =
                 document.getElementById(
                     'productId'
                 ).value.trim();
 
-
             const name =
                 document.getElementById(
                     'productName'
                 ).value.trim();
-
 
             const price =
                 Number(
@@ -1218,46 +1403,33 @@
                     ).value
                 );
 
-
             const categoryValue =
                 document.getElementById(
                     'productCategory'
                 ).value;
 
-
             const category_id =
                 Number(categoryValue);
-
 
             const shopee_link =
                 document.getElementById(
                     'productShopeeLink'
                 ).value.trim();
 
-
-            const image_url =
-                document.getElementById(
-                    'productImageUrl'
-                ).value.trim();
-
-
             const description =
                 document.getElementById(
                     'productDescription'
                 ).value.trim();
-
 
             const is_featured =
                 document.getElementById(
                     'productFeatured'
                 ).checked;
 
-
             const is_active =
                 document.getElementById(
                     'productActive'
                 ).checked;
-
 
             const imageFile =
                 document.getElementById(
@@ -1265,9 +1437,9 @@
                 ).files[0];
 
 
-            // ---------------------------------------------
+            // -------------------------------------------------
             // VALIDATION
-            // ---------------------------------------------
+            // -------------------------------------------------
 
             if (!name) {
 
@@ -1279,8 +1451,10 @@
 
             }
 
-
-            if (!Number.isFinite(price) || price < 0) {
+            if (
+                !Number.isFinite(price) ||
+                price < 0
+            ) {
 
                 alert(
                     'Harga produk tidak valid.'
@@ -1289,7 +1463,6 @@
                 return;
 
             }
-
 
             if (
                 !Number.isFinite(category_id) ||
@@ -1304,7 +1477,6 @@
 
             }
 
-
             if (!shopee_link) {
 
                 alert(
@@ -1316,259 +1488,235 @@
             }
 
 
-            // ---------------------------------------------
-            // IMAGE HANDLING
-            // ---------------------------------------------
+            // -------------------------------------------------
+            // SAVE BUTTON
+            // -------------------------------------------------
 
-            if (imageFile) {
-
-                const reader =
-                    new FileReader();
-
-
-                reader.onload = function (event) {
-
-                    saveProductData(
-                        id,
-                        name,
-                        price,
-                        category_id,
-                        shopee_link,
-                        event.target.result,
-                        description,
-                        is_featured,
-                        is_active
-                    );
-
-                };
-
-
-                reader.onerror = function () {
-
-                    alert(
-                        'Gagal membaca file gambar.'
-                    );
-
-                };
-
-
-                reader.readAsDataURL(
-                    imageFile
+            const saveButton =
+                document.getElementById(
+                    'saveProductButton'
                 );
 
-                return;
+            const originalButtonText =
+                saveButton
+                    ? saveButton.innerHTML
+                    : '';
+
+            isSaving = true;
+
+            if (saveButton) {
+
+                saveButton.disabled = true;
+
+                saveButton.innerHTML =
+                    '⏳ Menyimpan...';
 
             }
 
 
-            // ---------------------------------------------
-            // EDIT WITHOUT NEW IMAGE
-            // ---------------------------------------------
+            try {
 
-            let image = image_url;
+                // -------------------------------------------------
+                // IMAGE
+                // -------------------------------------------------
 
-
-            if (id && !image) {
-
-                const existingProduct =
-                    products.find(function (item) {
-
-                        return String(item.id) ===
-                            String(id);
-
-                    });
+                let image = null;
 
 
-                if (
-                    existingProduct &&
-                    existingProduct.image
-                ) {
+                // -------------------------------------------------
+                // UPLOAD NEW IMAGE TO R2
+                // -------------------------------------------------
+
+                if (imageFile) {
+
+                    if (saveButton) {
+
+                        saveButton.innerHTML =
+                            '⏳ Upload gambar...';
+
+                    }
 
                     image =
-                        existingProduct.image;
+                        await uploadImageToR2(
+                            imageFile
+                        );
 
-                }
-
-            }
-
-
-            saveProductData(
-                id,
-                name,
-                price,
-                category_id,
-                shopee_link,
-                image,
-                description,
-                is_featured,
-                is_active
-            );
-
-        }
-
-
-        // -----------------------------------------------------
-        // SAVE PRODUCT DATA
-        // -----------------------------------------------------
-
-        function saveProductData(
-            id,
-            name,
-            price,
-            category_id,
-            shopee_link,
-            image,
-            description,
-            is_featured,
-            is_active
-        ) {
-
-            // ---------------------------------------------
-            // EDIT EXISTING PRODUCT
-            // ---------------------------------------------
-
-            if (id) {
-
-                const index =
-                    products.findIndex(
-                        function (product) {
-
-                            return String(product.id) ===
-                                String(id);
-
-                        }
+                    console.log(
+                        'Image uploaded to R2:',
+                        image
                     );
-
-
-                if (index === -1) {
-
-                    alert(
-                        'Produk yang ingin diedit tidak ditemukan.'
-                    );
-
-                    return;
 
                 }
 
 
-                const existing =
-                    products[index];
+                // -------------------------------------------------
+                // KEEP EXISTING IMAGE WHEN EDITING
+                // -------------------------------------------------
+
+                if (
+                    id &&
+                    !image
+                ) {
+
+                    const existingProduct =
+                        products.find(
+                            function (item) {
+
+                                return (
+                                    String(item.id) ===
+                                    String(id)
+                                );
+
+                            }
+                        );
+
+                    if (
+                        existingProduct &&
+                        existingProduct.image
+                    ) {
+
+                        image =
+                            existingProduct.image;
+
+                    }
+
+                }
 
 
-                products[index] = {
+                // -------------------------------------------------
+                // API PAYLOAD
+                // -------------------------------------------------
 
-                    ...existing,
+                const payload = {
 
                     name,
+
                     price,
+
                     category_id,
-                    shopee_link,
+
                     image:
-                        image || existing.image || '',
-                    description,
+                        image || null,
+
+                    shopee_link,
+
+                    description:
+                        description || null,
+
                     is_featured,
+
                     is_active
 
                 };
 
-            }
+
+                if (saveButton) {
+
+                    saveButton.innerHTML =
+                        '⏳ Simpan produk...';
+
+                }
 
 
-            // ---------------------------------------------
-            // ADD NEW PRODUCT
-            // ---------------------------------------------
+                // -------------------------------------------------
+                // UPDATE
+                // -------------------------------------------------
 
-            else {
+                let data;
 
-                const ids =
-                    products
-                        .map(function (product) {
-                            return Number(product.id);
-                        })
-                        .filter(function (value) {
-                            return Number.isFinite(value);
-                        });
+                if (id) {
 
+                    data =
+                        await fetchJson(
+                            '../api/products',
+                            {
+                                method: 'PUT',
 
-                const newId =
-                    ids.length > 0
-                        ? Math.max(...ids) + 1
-                        : 1;
+                                body:
+                                    JSON.stringify({
+                                        id:
+                                            Number(id),
 
+                                        ...payload
+                                    })
+                            }
+                        );
 
-                products.push({
-
-                    id: newId,
-
-                    name,
-
-                    price,
-
-                    category_id,
-
-                    shopee_link,
-
-                    image: image || '',
-
-                    description,
-
-                    is_featured,
-
-                    is_active,
-
-                    views: 0,
-
-                    clicks: 0,
-
-                    created_at:
-                        new Date().toISOString()
-
-                });
-
-            }
+                }
 
 
-            // ---------------------------------------------
-            // SAVE
-            // ---------------------------------------------
+                // -------------------------------------------------
+                // CREATE
+                // -------------------------------------------------
 
-            try {
+                else {
 
-                localStorage.setItem(
-                    'products',
-                    JSON.stringify(products)
+                    data =
+                        await fetchJson(
+                            '../api/products',
+                            {
+                                method: 'POST',
+
+                                body:
+                                    JSON.stringify(
+                                        payload
+                                    )
+                            }
+                        );
+
+                }
+
+
+                console.log(
+                    'Product saved:',
+                    data.product
                 );
+
+
+                // -------------------------------------------------
+                // REFRESH FROM DATABASE
+                // -------------------------------------------------
+
+                hideProductForm();
+
+                await loadProducts();
+
+
+                alert(
+                    id
+                        ? '✅ Produk berhasil diperbarui!'
+                        : '✅ Produk berhasil ditambahkan!'
+                );
+
 
             } catch (error) {
 
                 console.error(
-                    'Failed to save products:',
+                    'Failed to save product:',
                     error
                 );
 
-
                 alert(
-                    'Gagal menyimpan produk. ' +
-                    'Penyimpanan browser mungkin sudah penuh.'
+                    'Gagal menyimpan produk: ' +
+                    error.message
                 );
 
-                return;
+
+            } finally {
+
+                isSaving = false;
+
+                if (saveButton) {
+
+                    saveButton.disabled =
+                        false;
+
+                    saveButton.innerHTML =
+                        originalButtonText;
+
+                }
 
             }
-
-
-            // ---------------------------------------------
-            // REFRESH UI
-            // ---------------------------------------------
-
-            hideProductForm();
-
-            loadProducts();
-
-
-            alert(
-                '✅ Produk berhasil disimpan!'
-            );
 
         }
 
@@ -1580,29 +1728,35 @@
         function showDeleteModal(id) {
 
             const product =
-                products.find(function (item) {
+                products.find(
+                    function (item) {
 
-                    return String(item.id) ===
-                        String(id);
+                        return (
+                            String(item.id) ===
+                            String(id)
+                        );
 
-                });
-
+                    }
+                );
 
             if (!product) {
                 return;
             }
 
-
-            deleteProductId = id;
-
+            deleteProductId =
+                id;
 
             const modal =
                 document.getElementById(
                     'deleteModal'
                 );
 
+            if (modal) {
 
-            modal.style.display = 'flex';
+                modal.style.display =
+                    'flex';
+
+            }
 
         }
 
@@ -1618,11 +1772,15 @@
                     'deleteModal'
                 );
 
+            if (modal) {
 
-            modal.style.display = 'none';
+                modal.style.display =
+                    'none';
 
+            }
 
-            deleteProductId = null;
+            deleteProductId =
+                null;
 
         }
 
@@ -1631,45 +1789,43 @@
         // CONFIRM DELETE
         // -----------------------------------------------------
 
-        function confirmDelete() {
+        async function confirmDelete() {
 
-            if (deleteProductId === null) {
+            if (
+                deleteProductId === null
+            ) {
                 return;
             }
-
-
-            const productExists =
-                products.some(function (product) {
-
-                    return String(product.id) ===
-                        String(deleteProductId);
-
-                });
-
-
-            if (!productExists) {
-
-                closeModal();
-
-                return;
-
-            }
-
-
-            products =
-                products.filter(function (product) {
-
-                    return String(product.id) !==
-                        String(deleteProductId);
-
-                });
-
 
             try {
 
-                localStorage.setItem(
-                    'products',
-                    JSON.stringify(products)
+                const data =
+                    await fetchJson(
+                        '../api/products',
+                        {
+                            method: 'DELETE',
+
+                            body:
+                                JSON.stringify({
+                                    id:
+                                        Number(
+                                            deleteProductId
+                                        )
+                                })
+                        }
+                    );
+
+                console.log(
+                    'Product deleted:',
+                    data.product
+                );
+
+                closeModal();
+
+                await loadProducts();
+
+                alert(
+                    '🗑️ Produk berhasil dihapus!'
                 );
 
             } catch (error) {
@@ -1680,22 +1836,11 @@
                 );
 
                 alert(
-                    'Gagal menghapus produk.'
+                    'Gagal menghapus produk: ' +
+                    error.message
                 );
 
-                return;
-
             }
-
-
-            loadProducts();
-
-            closeModal();
-
-
-            alert(
-                '🗑️ Produk berhasil dihapus!'
-            );
 
         }
 
@@ -1713,8 +1858,8 @@
                         'deleteModal'
                     );
 
-
                 if (
+                    modal &&
                     event.target === modal
                 ) {
 
@@ -1743,7 +1888,6 @@
                             'deleteModal'
                         );
 
-
                     if (
                         modal &&
                         modal.style.display === 'flex'
@@ -1752,6 +1896,37 @@
                         closeModal();
 
                     }
+
+                }
+
+            }
+        );
+
+
+        // -----------------------------------------------------
+        // IMAGE PREVIEW KEYBOARD ACCESS
+        // -----------------------------------------------------
+
+        document.addEventListener(
+            'keydown',
+            function (event) {
+
+                const preview =
+                    document.getElementById(
+                        'imagePreview'
+                    );
+
+                if (
+                    document.activeElement === preview &&
+                    (
+                        event.key === 'Enter' ||
+                        event.key === ' '
+                    )
+                ) {
+
+                    event.preventDefault();
+
+                    triggerImageUpload();
 
                 }
 

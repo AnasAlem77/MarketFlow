@@ -1,446 +1,235 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Market Flow</title>
+    <meta name="description" content="Market Flow Admin Login">
+    <meta name="robots" content="noindex, nofollow">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Admin Login - Market Flow
-    </title>
-
-    <meta
-        name="description"
-        content="Market Flow Admin Login"
-    >
-
-    <meta
-        name="robots"
-        content="noindex, nofollow"
-    >
-
-    <link
-        rel="icon"
-        type="image/svg+xml"
-        href="../assets/images/logo.svg"
-    >
-
-    <!-- Fonts -->
+    <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link
-        rel="stylesheet"
-        href="../assets/css/main.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="../assets/css/admin.css"
-    >
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
 
     <style>
-
-        /* ========================================
-           ADMIN LOGIN
-        ======================================== */
-
         .admin-login-container {
             min-height: 100vh;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             padding: 24px;
-
             position: relative;
-
             overflow: hidden;
         }
 
-
         .admin-login-container::before {
             content: '';
-
             position: absolute;
-
             width: 520px;
             height: 520px;
-
             top: -220px;
             right: -180px;
-
             border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(255, 107, 53, 0.12),
-                    transparent 68%
-                );
-
+            background: radial-gradient(circle, rgba(255,107,53,.12), transparent 68%);
             pointer-events: none;
         }
-
 
         .admin-login-container::after {
             content: '';
-
             position: absolute;
-
             width: 460px;
             height: 460px;
-
             bottom: -230px;
             left: -180px;
-
             border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(51, 102, 255, 0.08),
-                    transparent 68%
-                );
-
+            background: radial-gradient(circle, rgba(51,102,255,.08), transparent 68%);
             pointer-events: none;
         }
 
-
         .admin-login-box {
             position: relative;
-
             z-index: 2;
-
             width: min(420px, 100%);
-
             padding: 38px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(255, 255, 255, 0.045),
-                    rgba(255, 255, 255, 0.015)
-                );
-
-            border:
-                1px solid
-                rgba(255, 255, 255, 0.09);
-
+            background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+            border: 1px solid rgba(255,255,255,.09);
             border-radius: 20px;
-
             text-align: center;
-
-            box-shadow:
-                0 30px 90px
-                rgba(0, 0, 0, 0.42);
-
+            box-shadow: 0 30px 90px rgba(0,0,0,.42);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
-
-            animation:
-                adminLoginIn
-                0.45s
-                ease
-                both;
+            animation: adminLoginIn .45s ease both;
         }
-
 
         .admin-login-box::before {
             content: '';
-
             position: absolute;
-
             top: 0;
             left: 15%;
             right: 15%;
-
             height: 2px;
-
-            background:
-                var(--admin-gradient);
-
+            background: var(--admin-gradient);
             border-radius: 0 0 10px 10px;
         }
-
 
         .admin-logo {
             width: 72px;
             height: 72px;
-
             display: block;
-
             margin: 0 auto 20px;
-
             object-fit: contain;
-
             border-radius: 17px;
-
-            filter:
-                drop-shadow(
-                    0 10px 24px
-                    rgba(255, 107, 53, 0.2)
-                );
+            filter: drop-shadow(0 10px 24px rgba(255,107,53,.2));
         }
-
 
         .admin-login-box h1 {
             margin: 0;
-
-            color: #FFFFFF;
-
+            color: #fff;
             font-size: 27px;
             line-height: 1.2;
-
             font-weight: 800;
-
-            letter-spacing: -0.035em;
+            letter-spacing: -.035em;
         }
-
 
         .admin-login-box h1::after {
             content: '';
-
             display: block;
-
             width: 42px;
             height: 3px;
-
             margin: 12px auto 0;
-
-            background:
-                var(--admin-gradient);
-
+            background: var(--admin-gradient);
             border-radius: 999px;
         }
 
-
         .admin-login-form {
             margin-top: 30px;
-
             text-align: left;
         }
-
 
         .admin-login-form .form-group {
             margin-bottom: 17px;
         }
 
-
         .admin-login-form .form-group label {
             display: block;
-
             margin-bottom: 8px;
-
             color: var(--admin-text-soft);
-
             font-size: 12px;
             font-weight: 650;
         }
 
-
         .admin-login-form .form-group input {
             width: 100%;
-
             min-height: 46px;
-
             padding: 12px 14px;
-
-            background:
-                rgba(0, 0, 0, 0.28);
-
-            border:
-                1px solid
-                var(--admin-border);
-
+            background: rgba(0,0,0,.28);
+            border: 1px solid var(--admin-border);
             border-radius: 10px;
-
-            color: #FFFFFF;
-
+            color: #fff;
             font-family: inherit;
-
             font-size: 13px;
-
-            transition:
-                border-color 0.25s ease,
-                box-shadow 0.25s ease,
-                background 0.25s ease;
+            transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
         }
-
 
         .admin-login-form .form-group input:hover {
-            border-color:
-                var(--admin-border-light);
+            border-color: var(--admin-border-light);
         }
-
 
         .admin-login-form .form-group input:focus {
             outline: none;
-
-            background:
-                rgba(0, 0, 0, 0.38);
-
-            border-color:
-                var(--admin-primary);
-
-            box-shadow:
-                0 0 0 3px
-                rgba(255, 107, 53, 0.09);
+            background: rgba(0,0,0,.38);
+            border-color: var(--admin-primary);
+            box-shadow: 0 0 0 3px rgba(255,107,53,.09);
         }
-
 
         .admin-login-form .form-group input::placeholder {
-            color: #555555;
+            color: #777;
         }
 
-
         .form-error {
-            margin:
-                2px
-                0
-                15px;
-
-            padding:
-                10px
-                12px;
-
-            background:
-                rgba(255, 82, 82, 0.08);
-
-            border:
-                1px solid
-                rgba(255, 82, 82, 0.18);
-
+            margin: 2px 0 15px;
+            padding: 10px 12px;
+            background: rgba(255,82,82,.08);
+            border: 1px solid rgba(255,82,82,.18);
             border-radius: 9px;
-
-            color:
-                var(--admin-danger);
-
+            color: var(--admin-danger);
             font-size: 11px;
-
             line-height: 1.5;
-
             text-align: center;
         }
 
-
         .btn-full {
             width: 100%;
-
             min-height: 46px;
         }
 
-
         .admin-login-form .btn-gradient {
             margin-top: 4px;
-
             border: none;
-
             font-size: 13px;
         }
-
 
         .back-to-site {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-
             margin-top: 23px;
-
-            color:
-                var(--admin-text-muted);
-
+            color: var(--admin-text-muted);
             font-size: 11px;
             font-weight: 600;
-
             text-decoration: none;
-
-            transition:
-                color 0.25s ease,
-                transform 0.25s ease;
+            transition: color .25s ease, transform .25s ease;
         }
-
 
         .back-to-site:hover {
-            color:
-                var(--admin-primary);
-
-            transform:
-                translateX(-2px);
+            color: var(--admin-primary);
+            transform: translateX(-2px);
         }
 
+        .language-toggle {
+            margin-top: 20px;
+        }
 
         @keyframes adminLoginIn {
-
             from {
                 opacity: 0;
-
-                transform:
-                    translateY(18px)
-                    scale(0.98);
+                transform: translateY(18px) scale(.98);
             }
-
             to {
                 opacity: 1;
-
-                transform:
-                    translateY(0)
-                    scale(1);
+                transform: translateY(0) scale(1);
             }
-
         }
 
-
-        /* ========================================
-           LOGIN MOBILE
-        ======================================== */
-
         @media (max-width: 480px) {
-
             .admin-login-container {
                 padding: 16px;
             }
 
-
             .admin-login-box {
                 padding: 30px 22px;
-
                 border-radius: 17px;
             }
-
 
             .admin-logo {
                 width: 62px;
                 height: 62px;
-
                 margin-bottom: 17px;
             }
-
 
             .admin-login-box h1 {
                 font-size: 24px;
             }
 
-
             .admin-login-form {
                 margin-top: 25px;
             }
-
         }
 
-
-        /* ========================================
-           REDUCED MOTION
-        ======================================== */
-
         @media (prefers-reduced-motion: reduce) {
-
             .admin-login-box {
                 animation: none;
             }
@@ -450,62 +239,20 @@
             .btn {
                 transition: none;
             }
-
         }
-
     </style>
-
 </head>
 
-
 <body class="admin-body">
-
-
-    <!-- ==========================================
-         LOGIN
-    =========================================== -->
-
     <main class="admin-login-container">
+        <section class="admin-login-box" aria-labelledby="adminLoginTitle">
+            <img src="../assets/images/logo.svg" alt="Market Flow" class="admin-logo">
 
-        <section
-            class="admin-login-box"
-            aria-labelledby="adminLoginTitle"
-        >
+            <h1 id="adminLoginTitle">Admin Login</h1>
 
-            <!-- Logo -->
-
-            <img
-                src="../assets/images/logo.svg"
-                alt="Market Flow"
-                class="admin-logo"
-            >
-
-
-            <!-- Title -->
-
-            <h1 id="adminLoginTitle">
-                Admin Login
-            </h1>
-
-
-            <!-- Login Form -->
-
-            <form
-                class="admin-login-form"
-                onsubmit="handleLogin(event)"
-                novalidate
-            >
-
-                <!-- Username -->
-
+            <form class="admin-login-form" id="loginForm" novalidate>
                 <div class="form-group">
-
-                    <label
-                        for="adminUsernameInput"
-                    >
-                        Username
-                    </label>
-
+                    <label for="adminUsernameInput">Username</label>
                     <input
                         id="adminUsernameInput"
                         type="text"
@@ -515,20 +262,10 @@
                         required
                         autofocus
                     >
-
                 </div>
 
-
-                <!-- Password -->
-
                 <div class="form-group">
-
-                    <label
-                        for="adminPasswordInput"
-                    >
-                        Password
-                    </label>
-
+                    <label for="adminPasswordInput">Password</label>
                     <input
                         id="adminPasswordInput"
                         type="password"
@@ -537,201 +274,71 @@
                         autocomplete="current-password"
                         required
                     >
-
                 </div>
 
-
-                <!-- Error -->
-
-                <div
-                    class="form-error"
-                    id="loginError"
-                    role="alert"
-                    aria-live="polite"
-                    hidden
-                >
+                <div class="form-error" id="loginError" role="alert" aria-live="polite" hidden>
                     Username atau password salah
                 </div>
 
-
-                <!-- Submit -->
-
-                <button
-                    type="submit"
-                    class="btn btn-gradient btn-full"
-                >
+                <button type="submit" class="btn btn-gradient btn-full" id="loginButton">
                     Login
                 </button>
-
             </form>
 
+            <a href="../index.html" class="back-to-site">← Kembali ke Website</a>
 
-            <!-- Back -->
-
-            <a
-                href="../index.html"
-                class="back-to-site"
-            >
-                ← Kembali ke Website
-            </a>
-
-        
-            <!-- Language Switcher -->
             <div class="language-toggle" role="group" aria-label="Language selection">
                 <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
                 <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
             </div>
-</section>
-
+        </section>
     </main>
 
-
-    <!-- ==========================================
-         AUTHENTICATION
-    =========================================== -->
+    <script src="../assets/js/language.js"></script>
 
     <script>
+        // Ganti kedua nilai ini dengan kredensial asli yang biasa kamu gunakan.
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'marketflow2025';
 
-        // ========================================
-        // ADMIN CREDENTIALS
-        // ========================================
+        const form = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const loginButton = document.getElementById('loginButton');
 
-        const ADMIN_CREDENTIALS = {
-            username: 'admin',
-            password: 'marketflow2025'
-        };
-
-
-        // ========================================
-        // HANDLE LOGIN
-        // ========================================
-
-        function handleLogin(event) {
-
+        form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-
-            const form =
-                event.currentTarget;
-
-
-            const username =
-                form.elements.username
-                    .value
-                    .trim();
-
-
-            const password =
-                form.elements.password
-                    .value;
-
-
-            const loginError =
-                document.getElementById(
-                    'loginError'
-                );
-
-
-            const usernameInput =
-                document.getElementById(
-                    'adminUsernameInput'
-                );
-
-
-            const passwordInput =
-                document.getElementById(
-                    'adminPasswordInput'
-                );
-
-
-            // Reset error
+            const username = form.elements.username.value.trim();
+            const password = form.elements.password.value;
 
             loginError.hidden = true;
 
-
-            // Validate empty fields
-
-            if (
-                !username ||
-                !password
-            ) {
-
-                loginError.textContent =
-                    'Username dan password wajib diisi.';
-
+            if (!username || !password) {
+                loginError.textContent = 'Username dan password wajib diisi.';
                 loginError.hidden = false;
-
-                if (!username) {
-                    usernameInput.focus();
-                } else {
-                    passwordInput.focus();
-                }
-
                 return;
             }
-
-
-            // Check credentials
 
             if (
-                username ===
-                    ADMIN_CREDENTIALS.username &&
-                password ===
-                    ADMIN_CREDENTIALS.password
+                username !== ADMIN_USERNAME ||
+                password !== ADMIN_PASSWORD
             ) {
-
-                sessionStorage.setItem(
-                    'admin_logged_in',
-                    'true'
-                );
-
-
-                sessionStorage.setItem(
-                    'admin_user',
-                    username
-                );
-
-
-                window.location.href =
-                    'dashboard.html';
-
+                loginError.textContent = 'Username atau password salah.';
+                loginError.hidden = false;
+                form.elements.password.value = '';
+                form.elements.password.focus();
                 return;
             }
 
+            sessionStorage.setItem('admin_logged_in', 'true');
+            sessionStorage.setItem('admin_user', username);
 
-            // Invalid credentials
+            window.location.href = 'dashboard.html';
+        });
 
-            loginError.textContent =
-                'Username atau password salah.';
-
-            loginError.hidden = false;
-
-
-            passwordInput.value = '';
-
-            passwordInput.focus();
-
+        if (sessionStorage.getItem('admin_logged_in') === 'true') {
+            window.location.href = 'dashboard.html';
         }
-
-
-        // ========================================
-        // CHECK EXISTING SESSION
-        // ========================================
-
-        if (
-            sessionStorage.getItem(
-                'admin_logged_in'
-            ) === 'true'
-        ) {
-
-            window.location.href =
-                'dashboard.html';
-
-        }
-
     </script>
-
-
 </body>
-
 </html>

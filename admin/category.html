@@ -33,13 +33,15 @@
             </div>
 
             <div class="admin-user">
-                <!-- Language Switcher moved here -->
+
+                <!-- Language Switcher -->
                 <div class="language-toggle" role="group" aria-label="Language selection">
                     <button type="button" class="lang-btn" data-lang="id" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
                     <button type="button" class="lang-btn" data-lang="en" aria-label="English" aria-pressed="false">EN</button>
                 </div>
 
                 <span id="adminUsername">admin</span>
+
                 <button
                     type="button"
                     onclick="logout()"
@@ -47,6 +49,7 @@
                 >
                     Logout
                 </button>
+
             </div>
 
         </div>
@@ -89,6 +92,7 @@
 
             <!-- Page Header -->
             <div class="page-header">
+
                 <h1>Kelola Kategori</h1>
 
                 <button
@@ -98,6 +102,7 @@
                 >
                     + Tambah Kategori
                 </button>
+
             </div>
 
 
@@ -123,10 +128,11 @@
                     >
 
 
-                    <!-- Names -->
+                    <!-- Category Names -->
                     <div class="form-row">
 
                         <div class="form-group">
+
                             <label for="categoryNameEn">
                                 Nama Kategori (English)
                             </label>
@@ -140,10 +146,12 @@
                                 autocomplete="off"
                                 placeholder="Gadgets"
                             >
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="categoryNameId">
                                 Nama Kategori (Indonesian)
                             </label>
@@ -157,12 +165,13 @@
                                 autocomplete="off"
                                 placeholder="Gadget"
                             >
+
                         </div>
 
                     </div>
 
 
-                    <!-- Icon -->
+                    <!-- ==================== CATEGORY ICON ==================== -->
                     <div class="form-group">
 
                         <label for="categoryIcon">
@@ -171,37 +180,45 @@
 
                         <div class="icon-selector">
 
-                            <select
+                            <!--
+                                Users can enter any emoji.
+                                This field is no longer restricted to a fixed list.
+                            -->
+                            <input
+                                type="text"
                                 name="icon"
                                 id="categoryIcon"
                                 required
+                                maxlength="32"
+                                autocomplete="off"
+                                placeholder="Contoh: 📱 🎮 🐶 🚗"
+                                value="📱"
+                                aria-describedby="iconHelp"
+                                style="text-align: center; font-size: 24px;"
                             >
-                                <option value="📱">📱 Gadgets</option>
-                                <option value="👕">👕 Fashion</option>
-                                <option value="🏠">🏠 Home</option>
-                                <option value="💄">💄 Beauty</option>
-                                <option value="⚽">⚽ Sports</option>
-                                <option value="🎮">🎮 Gaming</option>
-                                <option value="🎧">🎧 Audio</option>
-                                <option value="⌚">⌚ Watches</option>
-                                <option value="📚">📚 Books</option>
-                                <option value="🚗">🚗 Automotive</option>
-                            </select>
 
+                            <!-- Live Icon Preview -->
                             <div
                                 class="icon-preview"
                                 id="iconPreview"
                                 aria-label="Preview ikon"
-                            >
-                                📱
-                            </div>
+                            >📱</div>
 
                         </div>
+
+                        <small
+                            id="iconHelp"
+                            style="display: block; margin-top: 8px;"
+                        >
+                            Masukkan emoji apa saja untuk kategori ini,
+                            misalnya 🎮, 🐶, 🚗, atau 👗.
+                            Kamu bisa menyalin emoji dari keyboard atau situs emoji.
+                        </small>
 
                     </div>
 
 
-                    <!-- Active -->
+                    <!-- ==================== CATEGORY STATUS ==================== -->
                     <div class="form-group checkbox-group">
 
                         <label>
@@ -218,7 +235,7 @@
                     </div>
 
 
-                    <!-- Form Actions -->
+                    <!-- ==================== FORM ACTIONS ==================== -->
                     <div class="form-actions">
 
                         <button
@@ -326,6 +343,7 @@
     <script>
         'use strict';
 
+
         /* =========================================
            AUTH
         ========================================= */
@@ -357,10 +375,10 @@
                 showApiError(error);
             }
 
-            const iconSelect = document.getElementById('categoryIcon');
+            const iconInput = document.getElementById('categoryIcon');
 
-            if (iconSelect) {
-                iconSelect.addEventListener('change', updateIconPreview);
+            if (iconInput) {
+                iconInput.addEventListener('input', updateIconPreview);
             }
 
         });
@@ -371,15 +389,15 @@
         ========================================= */
 
         function logout() {
-            fetch('../api/admin-auth', {
-                method: 'DELETE',
-                credentials: 'same-origin'
-            }).finally(function () {
-                sessionStorage.clear();
-                window.location.replace('login.html');
-            });
+              sessionStorage.removeItem('admin_logged_in');
+              sessionStorage.removeItem('admin_user');
+              window.location.replace('login.html');
         }
 
+
+        /* =========================================
+           FETCH JSON
+        ========================================= */
 
         async function fetchJson(url, options = {}) {
 
@@ -403,21 +421,35 @@
             }
 
             if (!response.ok || data.success === false) {
-                const error = new Error(data.message || 'Request failed.');
+
+                const error = new Error(
+                    data.message || 'Request failed.'
+                );
+
                 error.status = response.status;
+
                 throw error;
             }
 
             return data;
+
         }
 
+
+        /* =========================================
+           API ERROR HANDLING
+        ========================================= */
 
         function showApiError(error) {
 
             if (error?.status === 401) {
+
                 sessionStorage.clear();
+
                 alert('Sesi admin berakhir. Silakan login kembali.');
+
                 window.location.replace('login.html');
+
                 return;
             }
 
@@ -427,6 +459,7 @@
                     'Gagal memproses kategori. Silakan coba lagi.'
                 )
             );
+
         }
 
 
@@ -437,7 +470,10 @@
         async function loadProducts() {
 
             const data = await fetchJson('../api/products');
-            products = Array.isArray(data.products) ? data.products : [];
+
+            products = Array.isArray(data.products)
+                ? data.products
+                : [];
 
         }
 
@@ -449,7 +485,11 @@
         async function loadCategories() {
 
             const data = await fetchJson('../api/categories?admin=true');
-            categories = Array.isArray(data.categories) ? data.categories : [];
+
+            categories = Array.isArray(data.categories)
+                ? data.categories
+                : [];
+
             renderCategories();
 
         }
@@ -461,9 +501,7 @@
 
         function renderCategories() {
 
-            const tbody = document.getElementById(
-                'categoriesTable'
-            );
+            const tbody = document.getElementById('categoriesTable');
 
             if (!tbody) {
                 return;
@@ -523,16 +561,14 @@
                     category.is_active === 'true';
 
 
-                const statusClass =
-                    isActive
-                        ? 'badge-success'
-                        : 'badge-danger';
+                const statusClass = isActive
+                    ? 'badge-success'
+                    : 'badge-danger';
 
 
-                const statusText =
-                    isActive
-                        ? 'Aktif'
-                        : 'Nonaktif';
+                const statusText = isActive
+                    ? 'Aktif'
+                    : 'Nonaktif';
 
 
                 tbody.insertAdjacentHTML(
@@ -571,7 +607,7 @@
                                 title="Edit"
                                 aria-label="Edit kategori"
                             >
-                                ✏️️
+                                ✏️
                             </button>
 
                             <button
@@ -617,75 +653,49 @@
 
         function updateIconPreview() {
 
-            const select =
-                document.getElementById('categoryIcon');
+            const input = document.getElementById('categoryIcon');
 
-            const preview =
-                document.getElementById('iconPreview');
+            const preview = document.getElementById('iconPreview');
 
-
-            if (!select || !preview) {
+            if (!input || !preview) {
                 return;
             }
 
-
-            preview.textContent =
-                select.value || '📁';
+            preview.textContent = input.value.trim() || '📁';
 
         }
 
 
         /* =========================================
-           SHOW ADD FORM
+           SHOW ADD CATEGORY FORM
         ========================================= */
 
         function showAddCategoryForm() {
 
-            const container =
-                document.getElementById(
-                    'categoryFormContainer'
-                );
+            const container = document.getElementById(
+                'categoryFormContainer'
+            );
 
-            const form =
-                document.getElementById('categoryForm');
-
+            const form = document.getElementById('categoryForm');
 
             if (!container || !form) {
                 return;
             }
 
-
             container.style.display = 'block';
 
-
-            document.getElementById(
-                'formTitle'
-            ).textContent =
+            document.getElementById('formTitle').textContent =
                 'Tambah Kategori Baru';
-
 
             form.reset();
 
+            document.getElementById('categoryId').value = '';
 
-            document.getElementById(
-                'categoryId'
-            ).value = '';
+            document.getElementById('categoryIcon').value = '📱';
 
+            updateIconPreview();
 
-            document.getElementById(
-                'categoryIcon'
-            ).value = '📱';
-
-
-            document.getElementById(
-                'iconPreview'
-            ).textContent = '📱';
-
-
-            document.getElementById(
-                'categoryActive'
-            ).checked = true;
-
+            document.getElementById('categoryActive').checked = true;
 
             scrollToForm();
 
@@ -698,16 +708,13 @@
 
         function hideCategoryForm() {
 
-            const container =
-                document.getElementById(
-                    'categoryFormContainer'
-                );
-
+            const container = document.getElementById(
+                'categoryFormContainer'
+            );
 
             if (!container) {
                 return;
             }
-
 
             container.style.display = 'none';
 
@@ -720,16 +727,13 @@
 
         function scrollToForm() {
 
-            const container =
-                document.getElementById(
-                    'categoryFormContainer'
-                );
-
+            const container = document.getElementById(
+                'categoryFormContainer'
+            );
 
             if (!container) {
                 return;
             }
-
 
             container.scrollIntoView({
                 behavior: 'smooth',
@@ -745,71 +749,49 @@
 
         function editCategory(id) {
 
-            const category = categories.find(
-                function (item) {
-                    return String(item.id) === String(id);
-                }
-            );
+            const category = categories.find(function (item) {
+                return String(item.id) === String(id);
+            });
 
 
             if (!category) {
 
-                alert(
-                    '❌ Kategori tidak ditemukan.'
-                );
+                alert('❌ Kategori tidak ditemukan.');
 
                 return;
             }
 
 
-            const container =
-                document.getElementById(
-                    'categoryFormContainer'
-                );
-
+            const container = document.getElementById(
+                'categoryFormContainer'
+            );
 
             container.style.display = 'block';
 
 
-            document.getElementById(
-                'formTitle'
-            ).textContent =
+            document.getElementById('formTitle').textContent =
                 'Edit Kategori';
 
 
-            document.getElementById(
-                'categoryId'
-            ).value =
+            document.getElementById('categoryId').value =
                 category.id;
 
 
-            document.getElementById(
-                'categoryNameEn'
-            ).value =
+            document.getElementById('categoryNameEn').value =
                 category.name_en || '';
 
 
-            document.getElementById(
-                'categoryNameId'
-            ).value =
+            document.getElementById('categoryNameId').value =
                 category.name_id || '';
 
 
-            document.getElementById(
-                'categoryIcon'
-            ).value =
+            document.getElementById('categoryIcon').value =
                 category.icon || '📱';
 
-
-            document.getElementById(
-                'iconPreview'
-            ).textContent =
-                category.icon || '📱';
+            updateIconPreview();
 
 
-            document.getElementById(
-                'categoryActive'
-            ).checked =
+            document.getElementById('categoryActive').checked =
                 category.is_active === true ||
                 category.is_active === 1 ||
                 category.is_active === 'true';
@@ -829,34 +811,29 @@
             event.preventDefault();
 
 
-            const id =
-                document.getElementById(
-                    'categoryId'
-                ).value.trim();
+            const id = document.getElementById(
+                'categoryId'
+            ).value.trim();
 
 
-            const name_en =
-                document.getElementById(
-                    'categoryNameEn'
-                ).value.trim();
+            const name_en = document.getElementById(
+                'categoryNameEn'
+            ).value.trim();
 
 
-            const name_id =
-                document.getElementById(
-                    'categoryNameId'
-                ).value.trim();
+            const name_id = document.getElementById(
+                'categoryNameId'
+            ).value.trim();
 
 
-            const icon =
-                document.getElementById(
-                    'categoryIcon'
-                ).value;
+            const icon = document.getElementById(
+                'categoryIcon'
+            ).value.trim();
 
 
-            const is_active =
-                document.getElementById(
-                    'categoryActive'
-                ).checked;
+            const is_active = document.getElementById(
+                'categoryActive'
+            ).checked;
 
 
             /* Validation */
@@ -880,10 +857,12 @@
                     is_active
                 };
 
+
                 await fetchJson(
                     '../api/categories',
                     {
                         method: id ? 'PUT' : 'POST',
+
                         body: JSON.stringify(
                             id
                                 ? { id: Number(id), ...payload }
@@ -892,13 +871,19 @@
                     }
                 );
 
+
                 hideCategoryForm();
+
                 await loadProducts();
+
                 await loadCategories();
+
                 alert('✅ Kategori berhasil disimpan!');
 
             } catch (error) {
+
                 showApiError(error);
+
             }
 
         }
@@ -910,11 +895,9 @@
 
         function showDeleteModal(id) {
 
-            const category = categories.find(
-                function (item) {
-                    return String(item.id) === String(id);
-                }
-            );
+            const category = categories.find(function (item) {
+                return String(item.id) === String(id);
+            });
 
 
             if (!category) {
@@ -925,19 +908,17 @@
             deleteCategoryId = id;
 
 
-            const linkedProducts =
-                products.filter(
-                    function (product) {
-                        return String(product.category_id) ===
-                               String(id);
-                    }
-                ).length;
+            const linkedProducts = products.filter(function (product) {
+
+                return String(product.category_id) ===
+                       String(id);
+
+            }).length;
 
 
-            const message =
-                document.getElementById(
-                    'deleteModalMessage'
-                );
+            const message = document.getElementById(
+                'deleteModalMessage'
+            );
 
 
             if (linkedProducts > 0) {
@@ -953,9 +934,8 @@
             }
 
 
-            document.getElementById(
-                'deleteModal'
-            ).style.display = 'flex';
+            document.getElementById('deleteModal').style.display =
+                'flex';
 
         }
 
@@ -966,10 +946,8 @@
 
         function closeModal() {
 
-            document.getElementById(
-                'deleteModal'
-            ).style.display = 'none';
-
+            document.getElementById('deleteModal').style.display =
+                'none';
 
             deleteCategoryId = null;
 
@@ -987,12 +965,12 @@
             }
 
 
-            const category = categories.find(
-                function (item) {
-                    return String(item.id) ===
-                           String(deleteCategoryId);
-                }
-            );
+            const category = categories.find(function (item) {
+
+                return String(item.id) ===
+                       String(deleteCategoryId);
+
+            });
 
 
             if (!category) {
@@ -1009,6 +987,7 @@
                     '../api/categories',
                     {
                         method: 'PUT',
+
                         body: JSON.stringify({
                             id: Number(category.id),
                             name_en: category.name_en,
@@ -1019,13 +998,19 @@
                     }
                 );
 
+
                 await loadProducts();
+
                 await loadCategories();
+
                 closeModal();
+
                 alert('⏸️ Kategori berhasil dinonaktifkan!');
 
             } catch (error) {
+
                 showApiError(error);
+
             }
 
         }
@@ -1035,48 +1020,31 @@
            CLOSE MODAL WHEN CLICKING OUTSIDE
         ========================================= */
 
-        document.addEventListener(
-            'click',
-            function (event) {
+        document.addEventListener('click', function (event) {
 
-                const modal =
-                    document.getElementById(
-                        'deleteModal'
-                    );
+            const modal = document.getElementById('deleteModal');
 
-
-                if (
-                    modal &&
-                    event.target === modal
-                ) {
-
-                    closeModal();
-
-                }
-
+            if (modal && event.target === modal) {
+                closeModal();
             }
-        );
+
+        });
 
 
         /* =========================================
            ESC KEY
         ========================================= */
 
-        document.addEventListener(
-            'keydown',
-            function (event) {
+        document.addEventListener('keydown', function (event) {
 
-                if (
-                    event.key === 'Escape' &&
-                    deleteCategoryId !== null
-                ) {
-
-                    closeModal();
-
-                }
-
+            if (
+                event.key === 'Escape' &&
+                deleteCategoryId !== null
+            ) {
+                closeModal();
             }
-        );
+
+        });
 
     </script>
 

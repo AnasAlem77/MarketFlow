@@ -2999,8 +2999,8 @@ function renderCategoryIcon(
         return iconMap[value];
     }
 
-    return getPackageIconSvg(
-        30
+    return escapeHtml(
+        value || '📦'
     );
 }
 

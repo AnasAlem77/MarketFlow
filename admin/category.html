@@ -285,11 +285,11 @@
         <div class="modal-content">
 
             <h3 id="deleteModalTitle">
-                ⚠️ Hapus Kategori?
+                ⚠️ Nonaktifkan Kategori?
             </h3>
 
             <p id="deleteModalMessage">
-                Apakah Anda yakin ingin menghapus kategori ini?
+                Apakah Anda yakin ingin menonaktifkan kategori ini?
             </p>
 
             <div class="modal-actions">
@@ -299,7 +299,7 @@
                     class="btn btn-danger"
                     onclick="confirmDelete()"
                 >
-                    🗑️ Hapus
+                    ⏸️ Nonaktifkan
                 </button>
 
                 <button
@@ -348,10 +348,14 @@
            DOM READY
         ========================================= */
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
 
-            loadProducts();
-            loadCategories();
+            try {
+                await loadProducts();
+                await loadCategories();
+            } catch (error) {
+                showApiError(error);
+            }
 
             const iconSelect = document.getElementById('categoryIcon');
 
@@ -367,65 +371,62 @@
         ========================================= */
 
         function logout() {
-            sessionStorage.clear();
-            window.location.replace('login.html');
+            fetch('../api/admin-auth', {
+                method: 'DELETE',
+                credentials: 'same-origin'
+            }).finally(function () {
+                sessionStorage.clear();
+                window.location.replace('login.html');
+            });
         }
 
 
-        /* =========================================
-           LOCAL STORAGE HELPERS
-        ========================================= */
+        async function fetchJson(url, options = {}) {
 
-        function readLocalStorage(key, fallback = []) {
-
-            try {
-
-                const value = localStorage.getItem(key);
-
-                if (!value) {
-                    return fallback;
+            const response = await fetch(url, {
+                ...options,
+                credentials: 'same-origin',
+                headers: {
+                    ...(options.body
+                        ? { 'Content-Type': 'application/json' }
+                        : {}),
+                    ...(options.headers || {})
                 }
+            });
 
-                const parsed = JSON.parse(value);
+            let data;
 
-                return Array.isArray(parsed) ? parsed : fallback;
-
+            try {
+                data = await response.json();
             } catch (error) {
-
-                console.error(
-                    `Failed to read localStorage "${key}":`,
-                    error
-                );
-
-                return fallback;
+                throw new Error('Server returned an invalid response.');
             }
+
+            if (!response.ok || data.success === false) {
+                const error = new Error(data.message || 'Request failed.');
+                error.status = response.status;
+                throw error;
+            }
+
+            return data;
         }
 
 
-        function writeLocalStorage(key, value) {
+        function showApiError(error) {
 
-            try {
-
-                localStorage.setItem(
-                    key,
-                    JSON.stringify(value)
-                );
-
-                return true;
-
-            } catch (error) {
-
-                console.error(
-                    `Failed to write localStorage "${key}":`,
-                    error
-                );
-
-                alert(
-                    '❌ Gagal menyimpan data. Silakan coba lagi.'
-                );
-
-                return false;
+            if (error?.status === 401) {
+                sessionStorage.clear();
+                alert('Sesi admin berakhir. Silakan login kembali.');
+                window.location.replace('login.html');
+                return;
             }
+
+            alert(
+                '❌ ' + (
+                    error?.message ||
+                    'Gagal memproses kategori. Silakan coba lagi.'
+                )
+            );
         }
 
 
@@ -433,9 +434,10 @@
            LOAD PRODUCTS
         ========================================= */
 
-        function loadProducts() {
+        async function loadProducts() {
 
-            products = readLocalStorage('products', []);
+            const data = await fetchJson('../api/products');
+            products = Array.isArray(data.products) ? data.products : [];
 
         }
 
@@ -444,10 +446,10 @@
            LOAD CATEGORIES
         ========================================= */
 
-        function loadCategories() {
+        async function loadCategories() {
 
-            categories = readLocalStorage('categories', []);
-
+            const data = await fetchJson('../api/categories?admin=true');
+            categories = Array.isArray(data.categories) ? data.categories : [];
             renderCategories();
 
         }
@@ -576,10 +578,10 @@
                                 type="button"
                                 class="btn-icon btn-delete"
                                 onclick="showDeleteModal(${categoryId})"
-                                title="Hapus"
-                                aria-label="Hapus kategori"
+                                title="Nonaktifkan"
+                                aria-label="Nonaktifkan kategori"
                             >
-                                🗑️
+                                ⏸️
                             </button>
 
                         </td>
@@ -605,35 +607,6 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
-
-        }
-
-
-        /* =========================================
-           GENERATE ID
-        ========================================= */
-
-        function generateCategoryId() {
-
-            if (categories.length === 0) {
-                return 1;
-            }
-
-            const numericIds = categories
-                .map(function (category) {
-                    return Number(category.id);
-                })
-                .filter(function (id) {
-                    return Number.isFinite(id);
-                });
-
-
-            if (numericIds.length === 0) {
-                return 1;
-            }
-
-
-            return Math.max(...numericIds) + 1;
 
         }
 
@@ -851,7 +824,7 @@
            SAVE CATEGORY
         ========================================= */
 
-        function saveCategory(event) {
+        async function saveCategory(event) {
 
             event.preventDefault();
 
@@ -898,118 +871,35 @@
             }
 
 
-            /* Duplicate name check */
+            try {
 
-            const duplicate = categories.some(
-                function (category) {
-
-                    if (
-                        id &&
-                        String(category.id) === String(id)
-                    ) {
-                        return false;
-                    }
-
-
-                    return (
-                        String(category.name_en || '')
-                            .trim()
-                            .toLowerCase() ===
-                        name_en.toLowerCase()
-                    ) || (
-                        String(category.name_id || '')
-                            .trim()
-                            .toLowerCase() ===
-                        name_id.toLowerCase()
-                    );
-
-                }
-            );
-
-
-            if (duplicate) {
-
-                alert(
-                    '⚠️ Kategori dengan nama tersebut sudah ada.'
-                );
-
-                return;
-            }
-
-
-            /* Edit */
-
-            if (id) {
-
-                const index = categories.findIndex(
-                    function (category) {
-                        return String(category.id) ===
-                               String(id);
-                    }
-                );
-
-
-                if (index === -1) {
-
-                    alert(
-                        '❌ Kategori tidak ditemukan.'
-                    );
-
-                    return;
-                }
-
-
-                categories[index] = {
-                    ...categories[index],
-                    name_en: name_en,
-                    name_id: name_id,
-                    icon: icon,
-                    is_active: is_active
+                const payload = {
+                    name_en,
+                    name_id,
+                    icon,
+                    is_active
                 };
 
+                await fetchJson(
+                    '../api/categories',
+                    {
+                        method: id ? 'PUT' : 'POST',
+                        body: JSON.stringify(
+                            id
+                                ? { id: Number(id), ...payload }
+                                : payload
+                        )
+                    }
+                );
+
+                hideCategoryForm();
+                await loadProducts();
+                await loadCategories();
+                alert('✅ Kategori berhasil disimpan!');
+
+            } catch (error) {
+                showApiError(error);
             }
-
-
-            /* Add */
-
-            else {
-
-                categories.push({
-
-                    id: generateCategoryId(),
-
-                    name_en: name_en,
-
-                    name_id: name_id,
-
-                    icon: icon,
-
-                    is_active: is_active,
-
-                    created_at:
-                        new Date().toISOString()
-
-                });
-
-            }
-
-
-            if (!writeLocalStorage(
-                'categories',
-                categories
-            )) {
-                return;
-            }
-
-
-            hideCategoryForm();
-
-            loadCategories();
-
-
-            alert(
-                '✅ Kategori berhasil disimpan!'
-            );
 
         }
 
@@ -1053,12 +943,12 @@
             if (linkedProducts > 0) {
 
                 message.textContent =
-                    `Kategori "${category.name_id || category.name_en}" memiliki ${linkedProducts} produk. Jika dihapus, produk tersebut tidak akan terhapus tetapi akan kehilangan kategorinya. Apakah Anda yakin?`;
+                    `Kategori "${category.name_id || category.name_en}" memiliki ${linkedProducts} produk. Produk tetap terhubung, tetapi kategori tidak akan tampil di situs publik. Lanjutkan?`;
 
             } else {
 
                 message.textContent =
-                    `Apakah Anda yakin ingin menghapus kategori "${category.name_id || category.name_en}"?`;
+                    `Apakah Anda yakin ingin menonaktifkan kategori "${category.name_id || category.name_en}"?`;
 
             }
 
@@ -1090,7 +980,7 @@
            CONFIRM DELETE
         ========================================= */
 
-        function confirmDelete() {
+        async function confirmDelete() {
 
             if (deleteCategoryId === null) {
                 return;
@@ -1113,82 +1003,30 @@
             }
 
 
-            const linkedProducts =
-                products.filter(
-                    function (product) {
-                        return String(product.category_id) ===
-                               String(deleteCategoryId);
+            try {
+
+                await fetchJson(
+                    '../api/categories',
+                    {
+                        method: 'PUT',
+                        body: JSON.stringify({
+                            id: Number(category.id),
+                            name_en: category.name_en,
+                            name_id: category.name_id,
+                            icon: category.icon,
+                            is_active: false
+                        })
                     }
                 );
 
+                await loadProducts();
+                await loadCategories();
+                closeModal();
+                alert('⏸️ Kategori berhasil dinonaktifkan!');
 
-            /*
-             * Keep products intact.
-             * Only remove the category reference.
-             */
-
-            if (linkedProducts.length > 0) {
-
-                products = products.map(
-                    function (product) {
-
-                        if (
-                            String(product.category_id) ===
-                            String(deleteCategoryId)
-                        ) {
-
-                            const updatedProduct = {
-                                ...product
-                            };
-
-                            delete updatedProduct.category_id;
-
-                            return updatedProduct;
-                        }
-
-
-                        return product;
-
-                    }
-                );
-
-
-                if (!writeLocalStorage(
-                    'products',
-                    products
-                )) {
-                    return;
-                }
-
+            } catch (error) {
+                showApiError(error);
             }
-
-
-            /* Remove category */
-
-            categories = categories.filter(
-                function (item) {
-                    return String(item.id) !==
-                           String(deleteCategoryId);
-                }
-            );
-
-
-            if (!writeLocalStorage(
-                'categories',
-                categories
-            )) {
-                return;
-            }
-
-
-            loadCategories();
-
-            closeModal();
-
-
-            alert(
-                '🗑️️ Kategori berhasil dihapus!'
-            );
 
         }
 

@@ -140,9 +140,7 @@ async function loadBackendData() {
 
         if (
             productsData.success &&
-            Array.isArray(
-                productsData.products
-            )
+            Array.isArray(productsData.products)
         ) {
             writeStorage(
                 STORAGE_KEYS.products,
@@ -152,13 +150,18 @@ async function loadBackendData() {
 
         if (
             categoriesData.success &&
-            Array.isArray(
-                categoriesData.categories
-            )
+            Array.isArray(categoriesData.categories)
         ) {
+            const activeCategories =
+                categoriesData.categories.filter(
+                    category =>
+                        category &&
+                        category.is_active === true
+                );
+
             writeStorage(
                 STORAGE_KEYS.categories,
-                categoriesData.categories
+                activeCategories
             );
         }
 
@@ -169,8 +172,8 @@ async function loadBackendData() {
         );
 
         /*
-         * Keep localStorage data as fallback
-         * if the backend is temporarily unavailable.
+         * Preserve existing local data if the
+         * backend is temporarily unavailable.
          */
     }
 }
@@ -881,106 +884,187 @@ function viewCategory(id) {
 
 function loadCategoryProducts() {
     const container =
-        document.getElementById(
-            'categoryProducts'
-        );
+        document.getElementById('categoryProducts');
 
     if (!container) {
         return;
     }
 
-    const params =
-        new URLSearchParams(
-            window.location.search
+    const params = new URLSearchParams(
+        window.location.search
+    );
+
+    const categoryId = params.get('id');
+
+    const listing = document.getElementById(
+        'categoryListing'
+    );
+
+    const filterSection = document.getElementById(
+        'categoryFilter'
+    );
+
+    const productsSection = document.getElementById(
+        'categoryProductsSection'
+    );
+
+    const titleElement = document.getElementById(
+        'categoryTitle'
+    );
+
+    const categories = getCategories().filter(
+        category =>
+            category &&
+            category.is_active === true
+    );
+
+    /*
+     * No category selected:
+     * Show categories instead of all products.
+     */
+    if (!categoryId) {
+        if (listing) {
+            listing.hidden = false;
+        }
+
+        if (filterSection) {
+            filterSection.hidden = true;
+        }
+
+        if (productsSection) {
+            productsSection.hidden = true;
+        }
+
+        if (titleElement) {
+            titleElement.textContent =
+                currentLang === 'id'
+                    ? 'Kategori'
+                    : 'Categories';
+        }
+
+        document.title = 'Categories — Market Flow';
+
+        displayCategories(categories);
+
+        return;
+    }
+
+    /*
+     * A category was selected.
+     */
+    const category = categories.find(
+        item => sameId(item.id, categoryId)
+    );
+
+    if (!category) {
+        if (listing) {
+            listing.hidden = false;
+        }
+
+        if (filterSection) {
+            filterSection.hidden = true;
+        }
+
+        if (productsSection) {
+            productsSection.hidden = true;
+        }
+
+        if (titleElement) {
+            titleElement.textContent =
+                currentLang === 'id'
+                    ? 'Kategori tidak ditemukan'
+                    : 'Category not found';
+        }
+
+        document.title = 'Category not found — Market Flow';
+
+        displayCategories(categories);
+
+        showToast(
+            currentLang === 'id'
+                ? 'Kategori tidak ditemukan. Silakan pilih kategori lain.'
+                : 'Category not found. Please choose another category.',
+            'error'
         );
 
-    const categoryId =
-        params.get('id');
+        return;
+    }
 
-    const category =
-        getCategories().find(
-            item => sameId(item?.id, categoryId)
-        );
+    if (listing) {
+        listing.hidden = true;
+    }
 
-    const titleElement =
-        document.getElementById(
-            'categoryTitle'
-        );
+    if (filterSection) {
+        filterSection.hidden = false;
+    }
 
-    if (
-        titleElement &&
-        category
-    ) {
+    if (productsSection) {
+        productsSection.hidden = false;
+    }
+
+    if (titleElement) {
         titleElement.textContent =
             currentLang === 'id'
                 ? category.name_id
                 : category.name_en;
-
-        document.title =
-            `${titleElement.textContent} — Market Flow`;
     }
+
+    document.title =
+        `${titleElement?.textContent || 'Category'} — Market Flow`;
 
     const sortValue =
         document.getElementById('sortSelect')?.value ||
         'popular';
 
-    const products =
-        getProducts()
-            .filter(
-                product =>
-                    product &&
-                    product.is_active === true &&
-                    (
-                        !categoryId ||
-                        sameId(
-                            product.category_id,
-                            categoryId
-                        )
-                    )
-            )
-            .sort((a, b) => {
-                switch (sortValue) {
-                    case 'newest':
-                        return (
-                            new Date(b.created_at || 0) -
-                            new Date(a.created_at || 0)
-                        );
+    const products = getProducts()
+        .filter(
+            product =>
+                product &&
+                product.is_active === true &&
+                sameId(
+                    product.category_id,
+                    category.id
+                )
+        )
+        .sort((a, b) => {
+            switch (sortValue) {
+                case 'newest':
+                    return (
+                        new Date(b.created_at || 0) -
+                        new Date(a.created_at || 0)
+                    );
 
-                    case 'price_low':
-                        return (
-                            getSafeNumber(a.price) -
-                            getSafeNumber(b.price)
-                        );
+                case 'price_low':
+                    return (
+                        getSafeNumber(a.price) -
+                        getSafeNumber(b.price)
+                    );
 
-                    case 'price_high':
-                        return (
-                            getSafeNumber(b.price) -
-                            getSafeNumber(a.price)
-                        );
+                case 'price_high':
+                    return (
+                        getSafeNumber(b.price) -
+                        getSafeNumber(a.price)
+                    );
 
-                    default:
-                        return (
-                            getSafeNumber(b.views) -
-                            getSafeNumber(a.views)
-                        );
-                }
-            });
+                default:
+                    return (
+                        getSafeNumber(b.views) -
+                        getSafeNumber(a.views)
+                    );
+            }
+        });
 
-    const noResults =
-        document.getElementById(
-            'noResults'
-        );
+    const noResults = document.getElementById(
+        'noResults'
+    );
 
-    container.innerHTML =
-        products
-            .map(createProductCard)
-            .join('');
+    container.innerHTML = products
+        .map(createProductCard)
+        .join('');
 
     if (noResults) {
         noResults.style.display =
-            products.length
-                ? 'none'
-                : 'flex';
+            products.length ? 'none' : 'flex';
     }
 
     refreshScrollAnimations();
@@ -2930,78 +3014,20 @@ function getErrorIconSvg() {
 }
 
 
-function renderCategoryIcon(
-    icon
-) {
-    const value =
-        String(
-            icon || ''
-        ).trim();
+function renderCategoryIcon(icon) {
+    const value = String(icon || '').trim();
 
-    if (
-        value.startsWith('<svg')
-    ) {
-        return value;
-    }
-
-    const iconMap = {
-        '📱': `
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="6" y="2.5" width="12" height="19" rx="2.5"></rect>
-                <path d="M10 18.5h4"></path>
-            </svg>
-        `,
-
-        '👕': `
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m8 4 4 2 4-2 4 3-2 4-2-1v11H8V10l-2 1-2-4 4-3Z"></path>
-            </svg>
-        `,
-
-        '🏠': `
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m3 10 9-7 9 7"></path>
-                <path d="M5 9v11h14V9"></path>
-                <path d="M9 20v-6h6v6"></path>
-            </svg>
-        `,
-
-        '💄': `
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M8 3h8"></path>
-                <path d="M10 3v6l-3 3v8a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-8l-3-3V3"></path>
-                <path d="M7 12h10"></path>
-            </svg>
-        `,
-
-        '🎮': `
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M7 8h10a4 4 0 0 1 3.8 5.3l-1.2 4a2.5 2.5 0 0 1-4.4.8L14 16H10l-1.2 2.1a2.5 2.5 0 0 1-4.4-.8l-1.2-4A4 4 0 0 1 7 8Z"></path>
-                <path d="M8 11v4"></path>
-                <path d="M6 13h4"></path>
-                <path d="M16 12h.01"></path>
-                <path d="M18 14h.01"></path>
-            </svg>
-        `,
-
-        '📦':
-            getPackageIconSvg(
-                30
-            )
+    const emojiMap = {
+        'Electronics & Gadgets': '📱',
+        'Fashion': '👕',
+        'Home Appliances': '🏠'
     };
 
-    if (
-        Object.prototype.hasOwnProperty.call(
-            iconMap,
-            value
-        )
-    ) {
-        return iconMap[value];
+    if (value.includes('<svg')) {
+        return '📦';
     }
 
-    return escapeHtml(
-        value || '📦'
-    );
+    return escapeHtml(value || '📦');
 }
 
 

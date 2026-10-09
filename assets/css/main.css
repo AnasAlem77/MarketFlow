@@ -369,43 +369,6 @@ select {
 }
 
 
-/* =========================================================
-   07. ADMIN HEADER BUTTON
-   ========================================================= */
-
-.admin-header-btn {
-    width: 40px;
-    height: 40px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-
-    color: var(--text-gray);
-    background: rgba(255, 255, 255, 0.035);
-
-    transition:
-        color var(--transition),
-        border-color var(--transition),
-        background var(--transition),
-        transform var(--transition);
-}
-
-.admin-header-btn svg {
-    width: 19px;
-    height: 19px;
-}
-
-.admin-header-btn:hover {
-    color: var(--primary-orange);
-    border-color: var(--border-brand);
-    background: rgba(255, 107, 53, 0.08);
-    transform: translateY(-1px);
-}
-
 
 /* =========================================================
    08. GENERIC PAGE HEADER
@@ -3129,15 +3092,8 @@ button:disabled {
         gap: 7px;
     }
 
-    .admin-header-btn {
-        width: 36px;
-        height: 36px;
-    }
 
-    .admin-header-btn svg {
-        width: 18px;
-        height: 18px;
-    }
+
 
     .lang-btn {
         min-width: 34px;
@@ -3555,10 +3511,7 @@ button:disabled {
         font-size: 9px;
     }
 
-    .admin-header-btn {
-        width: 34px;
-        height: 34px;
-    }
+    
 
     /* Hero */
     .hero {
@@ -3700,10 +3653,7 @@ button:disabled {
         height: 30px;
     }
 
-    .admin-header-btn {
-        width: 32px;
-        height: 32px;
-    }
+    
 
     .lang-btn {
         min-width: 29px;
@@ -3942,7 +3892,7 @@ button:disabled {
 
     /* Center the category icons */
     .categories-section .categories-scroll {
-        justify-content: center;
+    justify-content: flex-start;
     }
 
     /* 3. Footer Navigation Menu (Desktop Viewport) */

@@ -8,6 +8,12 @@
     "about": "Tentang",
     "contact": "Kontak"
   },
+  "theme": {
+    "appearance": "Tampilan",
+    "system": "Otomatis / Sistem",
+    "light": "Terang",
+    "dark": "Gelap"
+  },
   "hero": {
     "tagline": "FIND • CHOOSE • BUY",
     "subtitle": "Temukan produk pilihan dari Shopee",
@@ -22,7 +28,7 @@
     "trending": "Sedang Trending"
   },
   "product": {
-    "buy_now": "Beli Sekarang",
+    "buy_now": "Cek Produk",
     "description": "Deskripsi",
     "specifications": "Spesifikasi",
     "related": "Produk Terkait",
@@ -151,7 +157,7 @@
     "section_1_title": "1. Deskripsi Layanan",
     "section_1_text": "Market Flow adalah platform discovery produk. Kami mengkurasi dan menampilkan produk dari Shopee. Kami tidak menjual produk secara langsung.",
     "section_2_title": "2. Pembelian",
-    "section_2_text": "Semua pembelian dilakukan melalui Shopee. Ketika Anda mengklik 'Beli Sekarang', Anda akan diarahkan ke website Shopee untuk menyelesaikan pembelian. Kami tidak bertanggung jawab atas transaksi apa pun yang dilakukan di Shopee.",
+    "section_2_text": "Semua pembelian dilakukan melalui Shopee. Ketika Anda mengklik 'Cek Produk', Anda akan diarahkan ke website Shopee untuk menyelesaikan pembelian. Kami tidak bertanggung jawab atas transaksi apa pun yang dilakukan di Shopee.",
     "section_3_title": "3. Informasi Produk",
     "section_3_text": "Kami berusaha memberikan informasi produk yang akurat, tetapi kami tidak dapat menjamin bahwa semua informasi lengkap atau terkini. Harga dan ketersediaan dapat berubah di Shopee.",
     "section_4_title": "4. Hak Kekayaan Intelektual",
@@ -255,7 +261,7 @@
   },
   "common": {
     "featured": "Unggulan",
-    "buy_now": "Beli Sekarang",
+    "buy_now": "Cek Produk",
     "share": "Bagikan",
     "product_not_found": "Produk tidak ditemukan.",
     "link_unavailable": "Tautan produk tidak tersedia.",

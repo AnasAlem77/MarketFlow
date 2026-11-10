@@ -544,8 +544,8 @@ function createProductCard(
         t(
             'common.buy_now',
             currentLang === 'id'
-                ? 'Beli Sekarang'
-                : 'Buy Now'
+                ? 'Cek Produk'
+                : 'Check Product'
         );
 
     const shareLabel =

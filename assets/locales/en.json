@@ -8,6 +8,12 @@
     "about": "About",
     "contact": "Contact"
   },
+  "theme": {
+    "appearance": "Appearance",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "hero": {
     "tagline": "FIND • CHOOSE • BUY",
     "subtitle": "Discover curated products from Shopee",
@@ -22,7 +28,7 @@
     "trending": "Trending Now"
   },
   "product": {
-    "buy_now": "Buy Now",
+    "buy_now": "Check Product",
     "description": "Description",
     "specifications": "Specifications",
     "related": "Related Products",
@@ -151,7 +157,7 @@
     "section_1_title": "1. Service Description",
     "section_1_text": "Market Flow is a product discovery platform. We curate and display products from Shopee. We do not sell products directly.",
     "section_2_title": "2. Purchases",
-    "section_2_text": "All purchases are made through Shopee. When you click 'Buy Now', you will be redirected to Shopee's website to complete your purchase. We are not responsible for any transactions made on Shopee.",
+    "section_2_text": "All purchases are made through Shopee. When you click 'Check Product', you will be redirected to Shopee's website to complete your purchase. We are not responsible for any transactions made on Shopee.",
     "section_3_title": "3. Product Information",
     "section_3_text": "We strive to provide accurate product information, but we cannot guarantee that all information is complete or current. Prices and availability are subject to change on Shopee.",
     "section_4_title": "4. Intellectual Property",
@@ -255,7 +261,7 @@
   },
   "common": {
     "featured": "Featured",
-    "buy_now": "Buy Now",
+    "buy_now": "Check Product",
     "share": "Share",
     "product_not_found": "Product not found.",
     "link_unavailable": "Product link is unavailable.",

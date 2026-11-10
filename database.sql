@@ -146,7 +146,7 @@ INSERT OR IGNORE INTO settings (key, value) VALUES
 ('currency', 'IDR'),
 ('contact_email', 'contact@marketflow.com'),
 ('contact_whatsapp', '+6281234567890'),
-('tiktok_url', 'https://tiktok.com/@marketflow'),
+('tiktok_url', 'https://tiktok.com/@marketflow_2'),
 ('instagram_url', 'https://instagram.com/marketflow'),
 ('developer_name', 'Anas Alem'),
 ('developer_url', 'https://github.com/anasalem');
@@ -187,3 +187,5 @@ SELECT
 FROM analytics
 GROUP BY DATE(created_at), type
 ORDER BY date DESC;
+-- Clean up deprecated categories
+DELETE FROM categories WHERE LOWER(name_en) IN ('men''s supplies', 'men''s essentials') OR LOWER(name_id) IN ('perlengkapan pria');

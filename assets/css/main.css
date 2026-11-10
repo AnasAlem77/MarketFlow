@@ -103,6 +103,27 @@
     --mobile-nav-z: 1500;
 }
 
+/* Soft light counterpart of the original Market Flow dark design. */
+:root[data-theme="light"] {
+    --bg-main: #f0f1f3;
+    --bg-soft: #e8eaf0;
+    --bg-card: #f7f7f8;
+    --bg-elevated: #eceef2;
+    --bg-hover: #e3e6ec;
+    --text-white: #292d38;
+    --text-light: #383e4b;
+    --text-gray: #687080;
+    --text-muted: #737b8a;
+    --text-dark: #858c99;
+    --border-color: #dde0e6;
+    --border-light: rgba(35, 42, 55, 0.08);
+    --border-brand: rgba(255, 107, 53, 0.38);
+    --shadow-sm: 0 4px 16px rgba(35, 42, 55, 0.08);
+    --shadow-md: 0 10px 30px rgba(35, 42, 55, 0.11);
+    --shadow-lg: 0 20px 50px rgba(35, 42, 55, 0.14);
+    --shadow-brand: 0 10px 30px rgba(255, 107, 53, 0.14);
+}
+
 
 /* =========================================================
    02. RESET
@@ -140,6 +161,74 @@ body {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
+
+:root[data-theme="light"] body {
+    background: radial-gradient(circle at 50% -10%, rgba(255, 107, 53, 0.10), transparent 32%), var(--bg-main);
+}
+
+:root[data-theme="light"] .header,
+:root[data-theme="light"] .site-header { border-color: var(--border-light); background: rgba(240, 241, 243, .84); }
+:root[data-theme="light"] .language-toggle { background: rgba(35, 42, 55, .035); }
+:root[data-theme="light"] .lang-btn.active { color: #fff; }
+:root[data-theme="light"] .product-image,
+:root[data-theme="light"] .product-image-wrap { background: var(--bg-elevated); }
+:root[data-theme="light"] .contact-form input,
+:root[data-theme="light"] .contact-form textarea { color: var(--text-light); border-color: var(--border-color); background: var(--bg-card); }
+:root[data-theme="light"] .contact-form input:focus,
+:root[data-theme="light"] .contact-form textarea:focus { background: var(--bg-elevated); }
+:root[data-theme="light"] .toast,
+:root[data-theme="light"] .share-modal,
+:root[data-theme="light"] .modal-content { background-color: var(--bg-card); }
+:root[data-theme="light"] select,
+:root[data-theme="light"] .filter-select,
+:root[data-theme="light"] .form-select {
+    color: var(--text-light);
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+}
+:root[data-theme="light"] select option,
+:root[data-theme="light"] .filter-select option,
+:root[data-theme="light"] .form-select option {
+    color: var(--text-light);
+    background-color: var(--bg-card);
+}
+:root[data-theme="light"] .product-badge:not(.featured) {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.85);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+:root[data-theme="light"] .btn-share,
+:root[data-theme="light"] .share-btn {
+    color: var(--text-gray);
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+:root[data-theme="light"] .btn-share:hover,
+:root[data-theme="light"] .share-btn:hover {
+    color: var(--primary-orange);
+    border-color: var(--border-brand);
+    background: var(--bg-hover);
+}
+:root[data-theme="light"] .mobile-bottom-nav,
+:root[data-theme="light"] .bottom-nav {
+    background: rgba(240, 241, 243, 0.92);
+    border-top-color: var(--border-light);
+}
+
+/* Theme control is intentionally a peer of the language control. */
+.theme-switcher { position: relative; display: inline-flex; }
+.theme-trigger { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); border-radius: 50%; color: var(--text-light); background: rgba(255,255,255,.035); transition: var(--transition-fast); }
+.theme-trigger:hover, .theme-switcher.open .theme-trigger { color: var(--primary-orange); border-color: var(--border-brand); background: var(--bg-elevated); }
+.theme-trigger svg, .theme-menu svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.theme-menu { position: absolute; top: calc(100% + 10px); right: 0; width: 178px; padding: 6px; display: none; border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-light); background: var(--bg-card); box-shadow: var(--shadow-md); z-index: calc(var(--header-z) + 5); }
+.theme-switcher.open .theme-menu { display: block; animation: theme-menu-in .16s ease both; }
+.theme-menu button { width: 100%; min-height: 36px; display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: 8px; color: var(--text-gray); background: transparent; text-align: left; font-size: 13px; }
+.theme-menu button:hover, .theme-menu button.selected { color: var(--text-light); background: var(--bg-hover); }
+.theme-menu button.selected svg { color: var(--primary-orange); }
+.theme-check { margin-left: auto; color: var(--primary-orange); opacity: 0; }
+.theme-menu button.selected .theme-check { opacity: 1; }
+@keyframes theme-menu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* One font everywhere (Inter) */
 button,
@@ -519,7 +608,7 @@ select {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
 
-    background: rgba(17, 17, 17, 0.9);
+    background: var(--bg-card);
 
     box-shadow: var(--shadow-md);
 
@@ -555,7 +644,7 @@ select {
 }
 
 .search-input::placeholder {
-    color: #666666;
+    color: var(--text-muted);
 }
 
 /* Search button — brand red gradient.
@@ -992,7 +1081,7 @@ form button[type="submit"] {
 
     overflow: hidden;
 
-    background: #151515;
+    background: var(--bg-elevated);
 }
 
 .product-image img {
@@ -1995,7 +2084,7 @@ form button[type="submit"] {
     width: 100%;
     margin: 0 0 3px;
 
-    color: #ececec;
+    color: var(--text-light);
 
     font-size: 11px;
     font-weight: 500;
@@ -2009,11 +2098,11 @@ form button[type="submit"] {
     min-height: 36px;
     padding: 6px 10px;
 
-    border: 1px solid #3a3a3a;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
 
-    color: #ffffff;
-    background: #1a1a1a;
+    color: var(--text-white);
+    background: var(--bg-card);
 
     font-size: 12px;
     line-height: 1.5;
@@ -2030,20 +2119,20 @@ form button[type="submit"] {
 
 .contact-form input::placeholder,
 .contact-form textarea::placeholder {
-    color: #909090;
+    color: var(--text-muted);
     opacity: 1;
     text-align: center;
 }
 
 .contact-form input:hover,
 .contact-form textarea:hover {
-    border-color: #4d4d4d;
+    border-color: var(--text-muted);
 }
 
 .contact-form input:focus,
 .contact-form textarea:focus {
     border-color: var(--primary-orange);
-    background: #1e1e1e;
+    background: var(--bg-elevated);
 
     box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.15);
 }
@@ -2083,7 +2172,7 @@ select {
     border-radius: var(--radius-md);
 
     color: var(--text-white);
-    background: #0d0d0d;
+    background: var(--bg-soft);
 
     transition:
         border-color var(--transition),
@@ -2114,7 +2203,7 @@ textarea {
 .form-textarea::placeholder,
 input::placeholder,
 textarea::placeholder {
-    color: #5f5f5f;
+    color: var(--text-muted);
 }
 
 .form-input:focus,
@@ -2445,7 +2534,7 @@ button:disabled {
             rgba(255, 107, 53, 0.05),
             transparent 30%
         ),
-        #080808;
+        var(--bg-soft);
 }
 
 .footer > .container {
@@ -2569,7 +2658,7 @@ button:disabled {
 .social-link svg {
     flex: 0 0 auto;
 
-    color: #707070;
+    color: var(--text-muted);
 
     transition: color var(--transition-fast);
 }

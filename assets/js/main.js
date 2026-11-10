@@ -2313,7 +2313,7 @@ function loadProduct(
     );
 
     setElementText(
-        '#productPrice',
+        '#productPriceValue',
         formatPrice(
             product.price
         )

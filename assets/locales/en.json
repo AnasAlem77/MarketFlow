@@ -39,6 +39,7 @@
     "price": "Price",
     "featured": "Featured",
     "new": "New"
+    ,"price_notice": "Prices may change on Shopee without prior notice. Please check the latest price on Shopee before making a purchase."
   },
   "search": {
     "placeholder": "Search products...",

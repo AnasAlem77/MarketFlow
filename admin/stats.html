@@ -337,6 +337,10 @@
 
         }
 
+        function statsMessage(key, fallback) {
+            return window.MarketFlowLanguage?.t(key, fallback) || fallback;
+        }
+
 
         // -----------------------------------------------------
         // SAFE LOCAL STORAGE
@@ -404,25 +408,33 @@
         // LOAD ALL STATISTICS
         // -----------------------------------------------------
 
-        function loadStats() {
+        async function loadStats() {
 
-            const products =
-                readLocalStorage(
-                    'products',
-                    []
-                );
+            setText('totalViews', '…');
+            setText('totalClicks', '…');
+            setText('totalProducts', '…');
+            setText('totalCategories', '…');
 
-            const categories =
-                readLocalStorage(
-                    'categories',
-                    []
-                );
+            const catalog = await getAdminCatalogData();
+            const products = catalog.products;
+            const categories = catalog.categories;
 
             const activities =
                 readLocalStorage(
                     'activities',
                     []
                 );
+
+            if (catalog.source === 'unavailable') {
+                setText('totalViews', '—');
+                setText('totalClicks', '—');
+                setText('totalProducts', '—');
+                setText('totalCategories', '—');
+                renderTopProductsUnavailable();
+                renderRecentActivity(activities);
+                drawChart(activities);
+                return;
+            }
 
 
             // ---------------------------------------------
@@ -503,6 +515,15 @@
 
             drawChart(activities);
 
+        }
+
+
+        function renderTopProductsUnavailable() {
+            const tbody = document.getElementById('topProductsTable');
+
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Catalog data is unavailable.</td></tr>';
+            }
         }
 
 
@@ -1541,8 +1562,7 @@
 
             const confirmed =
                 confirm(
-                    '⚠️ Apakah Anda yakin ingin mereset semua statistik? ' +
-                    'Tindakan ini tidak dapat dibatalkan.'
+                    `⚠️ ${statsMessage('admin.reset_stats_confirm', 'Apakah Anda yakin ingin mereset semua statistik? Tindakan ini tidak dapat dibatalkan.')}`
                 );
 
 
@@ -1592,7 +1612,7 @@
 
 
                 alert(
-                    '❌ Gagal mereset statistik.'
+                    `❌ ${statsMessage('admin.reset_stats_failed', 'Gagal mereset statistik.')}`
                 );
 
 
@@ -1605,7 +1625,7 @@
 
 
             alert(
-                '✅ Statistik berhasil direset!'
+                `✅ ${statsMessage('admin.reset_stats_success', 'Statistik berhasil direset!')}`
             );
 
         }

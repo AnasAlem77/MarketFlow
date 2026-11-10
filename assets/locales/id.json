@@ -224,7 +224,48 @@
     "recent_activity": "Aktivitas Terbaru",
     "views_chart": "Grafik Views (7 Hari Terakhir)",
     "logout": "Keluar",
-    "welcome": "Selamat datang kembali"
+    "welcome": "Selamat datang kembali",
+    "loading": "Memuat…",
+    "unavailable": "Tidak tersedia",
+    "catalog_unavailable": "Data katalog tidak tersedia.",
+    "active": "Aktif",
+    "inactive": "Nonaktif"
+    ,"session_expired": "Sesi admin berakhir. Silakan login kembali."
+    ,"category_process_error": "Gagal memproses kategori. Silakan coba lagi."
+    ,"category_search_empty": "Kategori tidak ditemukan untuk pencarian ini."
+    ,"category_not_found": "Kategori tidak ditemukan."
+    ,"category_fields_required": "Silakan lengkapi semua field kategori."
+    ,"category_saved": "Kategori berhasil disimpan!"
+    ,"category_deactivate_linked": "Kategori \"{name}\" memiliki {count} produk. Produk tetap terhubung, tetapi kategori tidak akan tampil di situs publik. Lanjutkan?"
+    ,"category_deactivate_confirm": "Apakah Anda yakin ingin menonaktifkan kategori \"{name}\"?"
+    ,"category_deactivated": "Kategori berhasil dinonaktifkan!"
+    ,"select_category": "Silakan pilih kategori."
+    ,"select_category_option": "Pilih Kategori"
+    ,"unnamed": "Tanpa Nama"
+    ,"categories_load_failed": "Gagal memuat kategori"
+    ,"image_format_invalid": "Format gambar tidak didukung. Gunakan JPG, PNG, WEBP, atau GIF."
+    ,"image_too_large": "Ukuran gambar terlalu besar. Maksimal 4MB."
+    ,"image_read_failed": "Gagal membaca gambar."
+    ,"product_name_required": "Nama produk wajib diisi."
+    ,"product_price_invalid": "Harga produk tidak valid."
+    ,"shopee_link_required": "Link Shopee wajib diisi."
+    ,"saving": "Menyimpan..."
+    ,"uploading_image": "Mengunggah gambar..."
+    ,"saving_product": "Menyimpan produk..."
+    ,"product_updated": "Produk berhasil diperbarui!"
+    ,"product_added": "Produk berhasil ditambahkan!"
+    ,"product_save_failed": "Gagal menyimpan produk"
+    ,"product_deleted": "Produk berhasil dihapus!"
+    ,"product_delete_failed": "Gagal menghapus produk"
+    ,"products_load_failed": "Gagal memuat produk"
+    ,"product_not_found": "Produk tidak ditemukan."
+    ,"image_upload_url_missing": "Server tidak mengembalikan URL upload gambar."
+    ,"image_upload_failed": "Gagal mengunggah gambar ke Cloudflare R2."
+    ,"reset_stats_confirm": "Apakah Anda yakin ingin mereset semua statistik? Tindakan ini tidak dapat dibatalkan."
+    ,"reset_stats_failed": "Gagal mereset statistik."
+    ,"reset_stats_success": "Statistik berhasil direset!"
+    ,"login_credentials_required": "Username dan password wajib diisi."
+    ,"login_credentials_invalid": "Username atau password salah."
   },
   "misc": {
     "loading": "Memuat...",

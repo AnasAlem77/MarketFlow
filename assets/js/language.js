@@ -215,6 +215,63 @@
         ['data-i18n-alt', 'alt']
     ];
 
+    /* Legacy admin pages predate data-i18n attributes. Keep them translatable
+       while the markup is progressively migrated, without touching product
+       names or other catalog content. */
+    const ADMIN_LEGACY_TEXT = Object.freeze({
+        'Produk': 'Products', 'Kategori': 'Categories', 'Statistik': 'Statistics',
+        'Kelola Produk': 'Manage Products', 'Kelola Kategori': 'Manage Categories',
+        'Tambah Produk': 'Add Product', 'Tambah Kategori': 'Add Category',
+        'Tambah Produk Baru': 'Add New Product', 'Tambah Kategori Baru': 'Add New Category',
+        'Simpan': 'Save', 'Batal': 'Cancel', 'Hapus': 'Delete', 'Logout': 'Logout',
+        'Nama Produk': 'Product Name', 'Harga (IDR)': 'Price (IDR)',
+        'Link Shopee': 'Shopee Link', 'Gambar Produk': 'Product Image',
+        'Deskripsi': 'Description', 'Produk Unggulan': 'Featured Product',
+        'Produk Aktif': 'Active Product', 'Nama Kategori (English)': 'Category Name (English)',
+        'Nama Kategori (Indonesian)': 'Category Name (Indonesian)', 'Ikon Kategori': 'Category Icon',
+        'Kategori Aktif': 'Active Category', 'Gambar': 'Image', 'Harga': 'Price',
+        'Featured': 'Featured', 'Status': 'Status', 'Aksi': 'Actions',
+        'Jumlah Produk': 'Product Count', 'Nama (EN)': 'Name (EN)', 'Nama (ID)': 'Name (ID)',
+        'Reset Statistik': 'Reset Statistics', 'Total Produk': 'Total Products',
+        'Total Kategori': 'Total Categories', 'Produk Terpopuler': 'Top Products',
+        'Aktivitas Terbaru': 'Recent Activity', 'Grafik Statistik 7 Hari Terakhir': 'Statistics Chart (Last 7 Days)',
+        'Kembali ke Website': 'Back to Website', 'Cari nama produk...': 'Search product names...',
+        'Cari nama kategori...': 'Search category names...'
+    });
+
+    function applyLegacyAdminTranslations() {
+        if (!document.body || !document.body.classList.contains('admin-body')) {
+            return;
+        }
+
+        const translations = currentLang === 'en'
+            ? ADMIN_LEGACY_TEXT
+            : Object.fromEntries(Object.entries(ADMIN_LEGACY_TEXT).map(([id, en]) => [en, id]));
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        const textNodes = [];
+        let node;
+
+        while ((node = walker.nextNode())) {
+            textNodes.push(node);
+        }
+
+        textNodes.forEach(textNode => {
+            const value = textNode.nodeValue.trim();
+
+            if (translations[value]) {
+                textNode.nodeValue = textNode.nodeValue.replace(value, translations[value]);
+            }
+        });
+
+        document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(element => {
+            const value = element.getAttribute('placeholder');
+
+            if (translations[value]) {
+                element.setAttribute('placeholder', translations[value]);
+            }
+        });
+    }
+
     function applyTranslations(root) {
         const scope = root && root.querySelectorAll ? root : document;
 
@@ -235,6 +292,8 @@
                 }
             });
         });
+
+        applyLegacyAdminTranslations();
 
         document.documentElement.lang = currentLang;
 

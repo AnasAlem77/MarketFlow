@@ -57,6 +57,7 @@
     --admin-chart-label: #888888;
 }
 
+
 :root[data-theme="light"] {
     --admin-bg: #f0f1f3;
     --admin-surface: #f7f7f8;
@@ -1553,6 +1554,103 @@ body.admin-body *::after {
 }
 
 
+/* List filtering controls used by the product and category managers. */
+.admin-list-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 14px;
+}
+
+.admin-list-search {
+    width: min(100%, 340px);
+    min-height: 42px;
+    padding: 10px 13px;
+    background: #0B0B0B;
+    border: 1px solid var(--admin-border);
+    border-radius: 9px;
+    color: var(--admin-text);
+    font: inherit;
+    font-size: 13px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.admin-list-search::placeholder {
+    color: var(--admin-text-muted);
+}
+
+.admin-list-search:focus {
+    outline: none;
+    background: var(--admin-card-hover);
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.08);
+}
+
+
+/* These follow the dark form declarations so Light Mode wins without changing Dark Mode. */
+:root[data-theme="light"] body.admin-body .product-form-container,
+:root[data-theme="light"] body.admin-body .category-form-container {
+    background: rgba(247, 247, 248, 0.88);
+    border-color: var(--admin-border);
+}
+
+:root[data-theme="light"] body.admin-body .form-group input,
+:root[data-theme="light"] body.admin-body .form-group select,
+:root[data-theme="light"] body.admin-body .form-group textarea,
+:root[data-theme="light"] body.admin-body .admin-list-search,
+:root[data-theme="light"] body.admin-body .icon-preview {
+    color: var(--admin-text);
+    background-color: var(--admin-surface);
+    border-color: var(--admin-border);
+}
+
+:root[data-theme="light"] body.admin-body .form-group input::placeholder,
+:root[data-theme="light"] body.admin-body .form-group textarea::placeholder,
+:root[data-theme="light"] body.admin-body .admin-list-search::placeholder {
+    color: var(--admin-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="light"] body.admin-body .form-group select option {
+    color: var(--admin-text);
+    background-color: var(--admin-surface);
+}
+
+:root[data-theme="light"] body.admin-body .form-group input:hover,
+:root[data-theme="light"] body.admin-body .form-group select:hover,
+:root[data-theme="light"] body.admin-body .form-group textarea:hover {
+    border-color: var(--admin-border-light);
+}
+
+:root[data-theme="light"] body.admin-body .form-group input:focus,
+:root[data-theme="light"] body.admin-body .form-group select:focus,
+:root[data-theme="light"] body.admin-body .form-group textarea:focus,
+:root[data-theme="light"] body.admin-body .admin-list-search:focus {
+    background-color: var(--admin-card-hover);
+    border-color: var(--admin-primary);
+}
+
+:root[data-theme="light"] body.admin-body .form-group input:disabled,
+:root[data-theme="light"] body.admin-body .form-group select:disabled,
+:root[data-theme="light"] body.admin-body .form-group textarea:disabled,
+:root[data-theme="light"] body.admin-body .admin-list-search:disabled {
+    color: var(--admin-text-muted);
+    background-color: #eceef2;
+    border-color: var(--admin-border);
+    opacity: 0.72;
+}
+
+:root[data-theme="light"] body.admin-body .image-preview {
+    background: repeating-linear-gradient(
+        45deg,
+        #eceef2,
+        #eceef2 10px,
+        #e4e7ec 10px,
+        #e4e7ec 20px
+    );
+    border-color: var(--admin-border-light);
+}
+
+
 .checkbox-group label {
     display: flex;
 
@@ -2720,4 +2818,26 @@ body.admin-body *::after {
   body.admin-body .admin-empty-state {
     padding: 32px 16px;
   }
+}
+
+
+/* Final Light Mode state overrides for form previews and narrow admin tables. */
+:root[data-theme="light"] body.admin-body .image-preview:hover {
+    background: repeating-linear-gradient(
+        45deg,
+        #e8ebf0,
+        #e8ebf0 10px,
+        #dfe3e9 10px,
+        #dfe3e9 20px
+    );
+}
+
+@media (max-width: 768px) {
+    .admin-list-toolbar {
+        justify-content: stretch;
+    }
+
+    .admin-list-search {
+        width: 100%;
+    }
 }

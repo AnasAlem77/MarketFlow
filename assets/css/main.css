@@ -1073,6 +1073,35 @@ form button[type="submit"] {
     margin-bottom: 20px;
 }
 
+.category-search-box {
+    display: flex;
+    width: min(100%, 360px);
+    margin: 0 14px 20px 0;
+}
+
+.category-search-box .search-input {
+    min-width: 0;
+}
+
+.search-result-group {
+    margin-bottom: 38px;
+}
+
+#searchResults > .search-result-group {
+    grid-column: 1 / -1;
+}
+
+.search-result-group-title {
+    margin: 0 0 16px;
+    color: var(--text-white);
+    font-size: clamp(18px, 2.4vw, 22px);
+    font-weight: 700;
+}
+
+.search-result-group-grid {
+    margin: 0;
+}
+
 .product-image {
     position: relative;
 

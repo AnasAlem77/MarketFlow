@@ -262,6 +262,19 @@
 
 
             <!-- ==================== CATEGORIES TABLE ==================== -->
+            <div class="admin-list-toolbar">
+                <label class="sr-only" for="categorySearchInput">
+                    Cari kategori berdasarkan nama
+                </label>
+                <input
+                    type="search"
+                    id="categorySearchInput"
+                    class="admin-list-search"
+                    placeholder="Cari nama kategori..."
+                    autocomplete="off"
+                >
+            </div>
+
             <div class="table-responsive">
 
                 <table class="admin-table">
@@ -362,6 +375,14 @@
         let categories = [];
         let products = [];
 
+        function adminMessage(key, fallback, values = {}) {
+            let message = window.MarketFlowLanguage?.t(key, fallback) || fallback;
+            Object.entries(values).forEach(([name, value]) => {
+                message = message.replaceAll(`{${name}}`, String(value));
+            });
+            return message;
+        }
+
 
         /* =========================================
            DOM READY
@@ -372,6 +393,13 @@
             try {
                 await loadProducts();
                 await loadCategories();
+
+                const categorySearchInput =
+                    document.getElementById('categorySearchInput');
+
+                if (categorySearchInput) {
+                    categorySearchInput.addEventListener('input', renderCategories);
+                }
             } catch (error) {
                 showApiError(error);
             }
@@ -447,7 +475,7 @@
 
                 sessionStorage.clear();
 
-                alert('Sesi admin berakhir. Silakan login kembali.');
+                alert(adminMessage('admin.session_expired', 'Sesi admin berakhir. Silakan login kembali.'));
 
                 window.location.replace('login.html');
 
@@ -457,7 +485,7 @@
             alert(
                 '❌ ' + (
                     error?.message ||
-                    'Gagal memproses kategori. Silakan coba lagi.'
+                    adminMessage('admin.category_process_error', 'Gagal memproses kategori. Silakan coba lagi.')
                 )
             );
 
@@ -511,7 +539,17 @@
             tbody.innerHTML = '';
 
 
-            if (categories.length === 0) {
+            const searchQuery = normalizeAdminSearch(
+                document.getElementById('categorySearchInput')?.value
+            );
+            const visibleCategories = categories.filter(function (category) {
+                return !searchQuery || [
+                    category?.name_en,
+                    category?.name_id
+                ].some(name => normalizeAdminSearch(name).includes(searchQuery));
+            });
+
+            if (visibleCategories.length === 0) {
 
                 tbody.innerHTML = `
                     <tr>
@@ -522,9 +560,9 @@
                                 padding: 40px;
                             "
                         >
-                            Belum ada kategori.
-                            Klik "Tambah Kategori"
-                            untuk menambahkan.
+                            ${searchQuery
+                                ? adminMessage('admin.category_search_empty', 'Kategori tidak ditemukan untuk pencarian ini.')
+                                : adminMessage('admin.no_categories', 'Belum ada kategori. Klik "Tambah Kategori" untuk menambahkan.')}
                         </td>
                     </tr>
                 `;
@@ -533,7 +571,7 @@
             }
 
 
-            categories.forEach(function (category) {
+            visibleCategories.forEach(function (category) {
 
                 const productCount = products.filter(function (product) {
 
@@ -568,8 +606,8 @@
 
 
                 const statusText = isActive
-                    ? 'Aktif'
-                    : 'Nonaktif';
+                    ? adminMessage('admin.active', 'Aktif')
+                    : adminMessage('admin.inactive', 'Nonaktif');
 
 
                 tbody.insertAdjacentHTML(
@@ -632,6 +670,16 @@
         }
 
 
+        function normalizeAdminSearch(value) {
+            return String(value ?? '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, ' ');
+        }
+
+
         /* =========================================
            ESCAPE HTML
         ========================================= */
@@ -686,7 +734,7 @@
             container.style.display = 'block';
 
             document.getElementById('formTitle').textContent =
-                'Tambah Kategori Baru';
+                adminMessage('admin.add_category', 'Tambah Kategori Baru');
 
             form.reset();
 
@@ -757,7 +805,7 @@
 
             if (!category) {
 
-                alert('❌ Kategori tidak ditemukan.');
+                alert(`❌ ${adminMessage('admin.category_not_found', 'Kategori tidak ditemukan.')}`);
 
                 return;
             }
@@ -771,7 +819,7 @@
 
 
             document.getElementById('formTitle').textContent =
-                'Edit Kategori';
+                adminMessage('admin.edit_category', 'Edit Kategori');
 
 
             document.getElementById('categoryId').value =
@@ -842,7 +890,7 @@
             if (!name_en || !name_id || !icon) {
 
                 alert(
-                    '⚠️ Silakan lengkapi semua field kategori.'
+                    `⚠️ ${adminMessage('admin.category_fields_required', 'Silakan lengkapi semua field kategori.')}`
                 );
 
                 return;
@@ -879,7 +927,7 @@
 
                 await loadCategories();
 
-                alert('✅ Kategori berhasil disimpan!');
+                alert(`✅ ${adminMessage('admin.category_saved', 'Kategori berhasil disimpan!')}`);
 
             } catch (error) {
 
@@ -925,12 +973,12 @@
             if (linkedProducts > 0) {
 
                 message.textContent =
-                    `Kategori "${category.name_id || category.name_en}" memiliki ${linkedProducts} produk. Produk tetap terhubung, tetapi kategori tidak akan tampil di situs publik. Lanjutkan?`;
+                    adminMessage('admin.category_deactivate_linked', 'Kategori "{name}" memiliki {count} produk. Produk tetap terhubung, tetapi kategori tidak akan tampil di situs publik. Lanjutkan?', { name: category.name_id || category.name_en, count: linkedProducts });
 
             } else {
 
                 message.textContent =
-                    `Apakah Anda yakin ingin menonaktifkan kategori "${category.name_id || category.name_en}"?`;
+                    adminMessage('admin.category_deactivate_confirm', 'Apakah Anda yakin ingin menonaktifkan kategori "{name}"?', { name: category.name_id || category.name_en });
 
             }
 
@@ -1006,7 +1054,7 @@
 
                 closeModal();
 
-                alert('⏸️ Kategori berhasil dinonaktifkan!');
+                alert(`⏸️ ${adminMessage('admin.category_deactivated', 'Kategori berhasil dinonaktifkan!')}`);
 
             } catch (error) {
 

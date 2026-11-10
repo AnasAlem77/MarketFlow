@@ -1016,6 +1016,13 @@ function loadCategoryProducts() {
         document.getElementById('sortSelect')?.value ||
         'popular';
 
+    const categoryQuery = (params.get('q') || '').trim();
+    const categorySearchInput = document.getElementById('categorySearchInput');
+
+    if (categorySearchInput) {
+        categorySearchInput.value = categoryQuery;
+    }
+
     const products = getProducts()
         .filter(
             product =>
@@ -1058,13 +1065,23 @@ function loadCategoryProducts() {
         'noResults'
     );
 
-    container.innerHTML = products
-        .map(createProductCard)
-        .join('');
+    if (categoryQuery) {
+        const results = smartSearchProducts(categoryQuery, {
+            categoryId: category.id
+        });
+
+        container.innerHTML = renderSearchResultGroups(results);
+    } else {
+        container.innerHTML = products
+            .map(createProductCard)
+            .join('');
+    }
 
     if (noResults) {
         noResults.style.display =
-            products.length ? 'none' : 'flex';
+            (categoryQuery ? container.children.length : products.length)
+                ? 'none'
+                : 'flex';
     }
 
     refreshScrollAnimations();
@@ -1076,9 +1093,43 @@ function sortProducts() {
 }
 
 
+function performCategorySearch() {
+    const input = document.getElementById('categorySearchInput');
+    const query = (input?.value || '').trim();
+    const params = new URLSearchParams(window.location.search);
+
+    if (query) {
+        params.set('q', query);
+    } else {
+        params.delete('q');
+    }
+
+    window.location.href = `category.html?${params.toString()}`;
+}
+
+
 /* ============================================
    SEARCH
    ============================================ */
+
+/*
+ * Keep synonyms in one client-side dictionary so searches work the same in
+ * either interface language. Every entry is intentionally a close product
+ * term, rather than a broad category, to avoid widening results unnecessarily.
+ */
+const SEARCH_SYNONYM_GROUPS = Object.freeze([
+    ['watch', 'jam tangan'],
+    ['phone', 'mobile phone', 'smartphone', 'telepon', 'ponsel', 'hp'],
+    ['laptop', 'notebook'],
+    ['headphones', 'headphone', 'headset', 'earphones', 'earphone'],
+    ['shoes', 'shoe', 'sepatu'],
+    ['bag', 'tas'],
+    ['clothes', 'clothing', 'shirt', 'pakaian', 'baju', 'kaos'],
+    ['camera', 'kamera'],
+    ['keyboard', 'papan ketik'],
+    ['mouse', 'tetikus'],
+    ['speaker', 'pengeras suara']
+]);
 
 function normalizeSearchText(
     value
@@ -1100,16 +1151,119 @@ function normalizeSearchText(
 }
 
 
-function searchProducts(
-    query
-) {
+function getSearchSynonyms(query) {
+    const normalizedQuery = normalizeSearchText(query);
+    const synonyms = new Set([normalizedQuery]);
+
+    SEARCH_SYNONYM_GROUPS.forEach(group => {
+        const normalizedGroup = group.map(normalizeSearchText);
+
+        if (normalizedGroup.includes(normalizedQuery)) {
+            normalizedGroup.forEach(term => synonyms.add(term));
+        }
+    });
+
+    return [...synonyms].filter(Boolean);
+}
+
+
+function getLevenshteinDistance(left, right) {
+    if (left === right) {
+        return 0;
+    }
+
+    if (!left || !right) {
+        return Math.max(left.length, right.length);
+    }
+
+    let previous = Array.from(
+        { length: right.length + 1 },
+        (_, index) => index
+    );
+
+    for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+        const current = [leftIndex];
+
+        for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+            current[rightIndex] = Math.min(
+                current[rightIndex - 1] + 1,
+                previous[rightIndex] + 1,
+                previous[rightIndex - 1] + (
+                    left[leftIndex - 1] === right[rightIndex - 1]
+                        ? 0
+                        : 1
+                )
+            );
+        }
+
+        previous = current;
+    }
+
+    return previous[right.length];
+}
+
+
+function getTypoThreshold(term) {
+    if (term.length <= 2) {
+        return 0;
+    }
+
+    if (term.length <= 5) {
+        return 1;
+    }
+
+    if (term.length <= 8) {
+        return 2;
+    }
+
+    return Math.min(3, Math.floor(term.length * 0.3));
+}
+
+
+function hasTypoMatch(query, field) {
+    const queryTerms = normalizeSearchText(query).split(' ').filter(Boolean);
+    const fieldTerms = normalizeSearchText(field).split(/[^a-z0-9]+/).filter(Boolean);
+
+    return queryTerms.length > 0 && queryTerms.every(queryTerm =>
+        fieldTerms.some(fieldTerm =>
+            getLevenshteinDistance(queryTerm, fieldTerm) <=
+            getTypoThreshold(queryTerm)
+        )
+    );
+}
+
+
+function getSearchFields(product, category) {
+    return {
+        name: normalizeSearchText(product?.name || ''),
+        description: normalizeSearchText(product?.description || ''),
+        categoryNameEn: normalizeSearchText(category?.name_en || ''),
+        categoryNameId: normalizeSearchText(category?.name_id || '')
+    };
+}
+
+
+function sortSearchResults(results) {
+    return results.sort((left, right) =>
+        right.score - left.score ||
+        getSafeNumber(right.product.views) - getSafeNumber(left.product.views) ||
+        String(left.product.name || '').localeCompare(String(right.product.name || ''))
+    );
+}
+
+
+function smartSearchProducts(query, options = {}) {
     const normalizedQuery =
         normalizeSearchText(
             query
         );
 
     if (!normalizedQuery) {
-        return [];
+        return {
+            exactMatches: [],
+            relatedMatches: [],
+            alternatives: []
+        };
     }
 
     const products =
@@ -1122,10 +1276,19 @@ function searchProducts(
         products.filter(
             product =>
                 product &&
-                product.is_active === true
+                product.is_active === true &&
+                (
+                    options.categoryId === undefined ||
+                    options.categoryId === null ||
+                    sameId(product.category_id, options.categoryId)
+                )
         );
 
-    return activeProducts
+    const synonyms = getSearchSynonyms(normalizedQuery);
+    const exactMatches = [];
+    const relatedMatches = [];
+
+    activeProducts
         .map(product => {
 
             const category =
@@ -1137,112 +1300,132 @@ function searchProducts(
                         )
                 );
 
-            const categoryId =
-                category?.id ?? '';
+            const fields = getSearchFields(product, category);
+            const searchableFields = Object.values(fields).filter(Boolean);
+            const exactName = fields.name === normalizedQuery;
+            const directName = fields.name.includes(normalizedQuery);
+            const directOtherField = [
+                fields.description,
+                fields.categoryNameEn,
+                fields.categoryNameId
+            ].some(field => field.includes(normalizedQuery));
+            const synonymMatch = synonyms
+                .filter(term => term !== normalizedQuery)
+                .some(term => searchableFields.some(field => field.includes(term)));
+            const typoMatch = !directName && !directOtherField && !synonymMatch &&
+                searchableFields.some(field => hasTypoMatch(normalizedQuery, field));
 
-            const categoryIdText =
-                normalizeSearchText(
-                    categoryId
-                );
-
-            const categoryNameId =
-                normalizeSearchText(
-                    category?.name_id || ''
-                );
-
-            const categoryNameEn =
-                normalizeSearchText(
-                    category?.name_en || ''
-                );
-
-            const productName =
-                normalizeSearchText(
-                    product.name || ''
-                );
-
-            const description =
-                normalizeSearchText(
-                    product.description || ''
-                );
-
-            const fields = [
-                productName,
-                description,
-                categoryNameId,
-                categoryNameEn
-            ].filter(Boolean);
-
-            const matched =
-                fields.some(
-                    field =>
-                        field.includes(
-                            normalizedQuery
-                        )
-                );
-
-            if (!matched) {
-                return null;
+            if (!exactName && !directName && !directOtherField && !synonymMatch && !typoMatch) {
+                return;
             }
 
-            let score = 0;
+            let score = exactName ? 1000 : 0;
+            score += directName ? 300 : 0;
+            score += fields.name.startsWith(normalizedQuery) ? 150 : 0;
+            score += directOtherField ? 100 : 0;
+            score += synonymMatch ? 90 : 0;
+            score += typoMatch ? 70 : 0;
 
-            if (
-                productName ===
-                normalizedQuery
-            ) {
-                score += 100;
+            const result = { product, categoryId: product.category_id, score };
+
+            if (exactName) {
+                exactMatches.push(result);
+            } else {
+                relatedMatches.push(result);
             }
-
-            if (
-                productName.startsWith(
-                    normalizedQuery
-                )
-            ) {
-                score += 50;
-            }
-
-            if (
-                productName.includes(
-                    normalizedQuery
-                )
-            ) {
-                score += 30;
-            }
-
-            if (
-                categoryNameId.includes(
-                    normalizedQuery
-                ) ||
-                categoryNameEn.includes(
-                    normalizedQuery
-                )
-            ) {
-                score += 20;
-            }
-
-            if (
-                description.includes(
-                    normalizedQuery
-                )
-            ) {
-                score += 10;
-            }
-
-            return {
-                product,
-                categoryId,
-                score
-            };
         })
-        .filter(Boolean)
-        .sort(
-            (a, b) =>
-                b.score - a.score
-        )
-        .map(
-            result =>
-                result.product
-        );
+
+    sortSearchResults(exactMatches);
+    sortSearchResults(relatedMatches);
+
+    const seenProductIds = new Set(
+        [...exactMatches, ...relatedMatches].map(result => String(result.product.id))
+    );
+    const relatedCategoryIds = new Set(
+        relatedMatches.map(result => String(result.categoryId))
+    );
+    const relatedProductTerms = new Set(
+        relatedMatches
+            .flatMap(result => getSearchFields(
+                result.product,
+                categories.find(category => sameId(category?.id, result.product.category_id))
+            ).name.split(' '))
+            .filter(term => term.length >= 3)
+    );
+    const alternatives = exactMatches.length || !relatedCategoryIds.size
+        ? []
+        : sortSearchResults(
+            activeProducts
+                .filter(product =>
+                    !seenProductIds.has(String(product.id)) &&
+                    relatedCategoryIds.has(String(product.category_id)) &&
+                    relatedProductTerms.size > 0 &&
+                    [...relatedProductTerms].some(term => {
+                        const category = categories.find(item =>
+                            sameId(item?.id, product.category_id)
+                        );
+                        const fields = getSearchFields(product, category);
+
+                        return fields.name.includes(term) ||
+                            fields.description.includes(term);
+                    })
+                )
+                .map(product => ({
+                    product,
+                    categoryId: product.category_id,
+                    score: getSafeNumber(product.views)
+                }))
+        ).slice(0, 3);
+
+    return {
+        exactMatches: exactMatches.map(result => result.product),
+        relatedMatches: relatedMatches.map(result => result.product),
+        alternatives: alternatives.map(result => result.product)
+    };
+}
+
+
+/* Backwards-compatible flat result list for existing callers. */
+function searchProducts(query, options = {}) {
+    const results = smartSearchProducts(query, options);
+
+    return [
+        ...results.exactMatches,
+        ...results.relatedMatches,
+        ...results.alternatives
+    ];
+}
+
+
+function getSearchGroupLabel(type) {
+    const labels = {
+        exact: currentLang === 'id' ? 'Cocok Tepat' : 'Exact Match',
+        related: currentLang === 'id' ? 'Hasil Terkait' : 'Related Matches',
+        alternatives: currentLang === 'id' ? 'Alternatif Relevan' : 'Relevant Alternatives'
+    };
+
+    return labels[type];
+}
+
+
+function renderSearchResultGroups(results) {
+    const groups = [
+        ['exact', results.exactMatches],
+        ['related', results.relatedMatches],
+        ['alternatives', results.alternatives]
+    ];
+
+    return groups
+        .filter(([, products]) => products.length)
+        .map(([type, products]) => `
+            <section class="search-result-group search-result-group-${type}">
+                <h2 class="search-result-group-title">${escapeHtml(getSearchGroupLabel(type))}</h2>
+                <div class="products-grid search-result-group-grid">
+                    ${products.map(createProductCard).join('')}
+                </div>
+            </section>
+        `)
+        .join('');
 }
 
 
@@ -1319,19 +1502,16 @@ function loadSearchPage() {
         return;
     }
 
-    const results =
-        searchProducts(
-            query
-        );
+    const results = smartSearchProducts(query);
+    const resultCount =
+        results.exactMatches.length +
+        results.relatedMatches.length +
+        results.alternatives.length;
 
-    if (results.length > 0) {
+    if (resultCount > 0) {
 
         resultsContainer.innerHTML =
-            results
-                .map(
-                    createProductCard
-                )
-                .join('');
+            renderSearchResultGroups(results);
 
         hideSearchNoResults(
             noResults
@@ -1483,6 +1663,24 @@ function setupEventListeners() {
                 }
             );
         }
+    }
+
+    const categorySearchInput = document.getElementById('categorySearchInput');
+    const categorySearchButton = document.getElementById('categorySearchButton');
+
+    if (categorySearchInput && categorySearchInput.dataset.searchBound !== 'true') {
+        categorySearchInput.dataset.searchBound = 'true';
+        categorySearchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performCategorySearch();
+            }
+        });
+    }
+
+    if (categorySearchButton && categorySearchButton.dataset.searchBound !== 'true') {
+        categorySearchButton.dataset.searchBound = 'true';
+        categorySearchButton.addEventListener('click', performCategorySearch);
     }
 
     const menuToggle =

@@ -429,6 +429,155 @@ function updateAdminUsername() {
 
 
 /* ============================================
+   ADMIN CATALOG DATA
+   Use the existing public endpoints when they are available, and retain the
+   localStorage catalog as the development/offline fallback. No backend state
+   is written by these helpers.
+   ============================================ */
+
+async function getAdminCatalogData() {
+    const localProducts = getStorageArray('products');
+    const localCategories = getStorageArray('categories');
+
+    try {
+        const [productsResponse, categoriesResponse] = await Promise.all([
+            fetch('../api/products'),
+            fetch('../api/categories?admin=true')
+        ]);
+
+        if (!productsResponse.ok || !categoriesResponse.ok) {
+            throw new Error('Catalog service is unavailable.');
+        }
+
+        const [productsData, categoriesData] = await Promise.all([
+            productsResponse.json(),
+            categoriesResponse.json()
+        ]);
+
+        if (!Array.isArray(productsData?.products) || !Array.isArray(categoriesData?.categories)) {
+            throw new Error('Catalog service returned invalid data.');
+        }
+
+        return {
+            products: productsData.products,
+            categories: categoriesData.categories,
+            source: 'api',
+            error: null
+        };
+    } catch (error) {
+        const hasLocalCatalog = localProducts.length > 0 || localCategories.length > 0;
+
+        return {
+            products: localProducts,
+            categories: localCategories,
+            source: hasLocalCatalog ? 'local' : 'unavailable',
+            error
+        };
+    }
+}
+
+
+function setDashboardMetric(id, value) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+
+function getAdminTranslation(key, fallback) {
+    return window.MarketFlowLanguage
+        ? window.MarketFlowLanguage.t(key, fallback)
+        : fallback;
+}
+
+
+function getAdminNumberLocale() {
+    return window.MarketFlowLanguage?.getCurrentLanguage?.() === 'en'
+        ? 'en-US'
+        : 'id-ID';
+}
+
+
+async function loadDashboardStats() {
+    setDashboardMetric('totalProducts', getAdminTranslation('admin.loading', '…'));
+    setDashboardMetric('totalViews', '…');
+    setDashboardMetric('totalClicks', '…');
+    setDashboardMetric('totalCategories', '…');
+
+    const catalog = await getAdminCatalogData();
+
+    if (catalog.source === 'unavailable') {
+        ['totalProducts', 'totalViews', 'totalClicks', 'totalCategories']
+            .forEach(id => setDashboardMetric(id, getAdminTranslation('admin.unavailable', '—')));
+        return catalog;
+    }
+
+    const totalViews = catalog.products.reduce(
+        (total, product) => total + getNonNegativeNumber(product?.views),
+        0
+    );
+    const totalClicks = catalog.products.reduce(
+        (total, product) => total + getNonNegativeNumber(product?.clicks),
+        0
+    );
+
+    const locale = getAdminNumberLocale();
+    setDashboardMetric('totalProducts', catalog.products.length.toLocaleString(locale));
+    setDashboardMetric('totalViews', totalViews.toLocaleString(locale));
+    setDashboardMetric('totalClicks', totalClicks.toLocaleString(locale));
+    setDashboardMetric('totalCategories', catalog.categories.length.toLocaleString(locale));
+
+    return catalog;
+}
+
+
+async function loadRecentProducts() {
+    const tbody = document.getElementById('recentProductsTable');
+
+    if (!tbody) {
+        return;
+    }
+
+    tbody.innerHTML = `<tr><td colspan="6">${getAdminTranslation('admin.loading', 'Loading…')}</td></tr>`;
+
+    const catalog = await getAdminCatalogData();
+
+    if (catalog.source === 'unavailable') {
+        tbody.innerHTML = `<tr><td colspan="6">${getAdminTranslation('admin.catalog_unavailable', 'Catalog data is unavailable.')}</td></tr>`;
+        return;
+    }
+
+    const recentProducts = [...catalog.products]
+        .sort((left, right) => new Date(right.created_at || 0) - new Date(left.created_at || 0))
+        .slice(0, 5);
+
+    if (!recentProducts.length) {
+        tbody.innerHTML = `<tr><td colspan="6">${getAdminTranslation('admin.no_products', 'No products yet.')}</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = recentProducts.map(product => {
+        const category = catalog.categories.find(item => sameId(item?.id, product.category_id));
+        const categoryName = category?.name_id || category?.name_en || '-';
+        const active = product.is_active === true || product.is_active === 1 || product.is_active === '1';
+        const image = String(product.image || '../assets/images/placeholder.svg').replace(/"/g, '&quot;');
+        const productName = String(product.name || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        return `<tr>
+            <td><img class="product-thumb" src="${image}" alt="${productName}"></td>
+            <td>${productName}</td>
+            <td>${formatPrice(product.price)}</td>
+            <td>${categoryName}</td>
+            <td><span class="badge ${active ? 'badge-success' : 'badge-danger'}">${active ? getAdminTranslation('admin.active', 'Active') : getAdminTranslation('admin.inactive', 'Inactive')}</span></td>
+            <td><a class="btn-icon btn-edit" href="products.html">✏️</a></td>
+        </tr>`;
+    }).join('');
+}
+
+
+/* ============================================
    SAMPLE DATA
    ============================================ */
 
@@ -806,6 +955,10 @@ if (
 
         getAdminUsername,
         updateAdminUsername,
+
+        getAdminCatalogData,
+        loadDashboardStats,
+        loadRecentProducts,
 
         initializeSampleData,
         resetStatistics,

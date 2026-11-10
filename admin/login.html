@@ -306,7 +306,10 @@
             loginError.hidden = true;
 
             if (!username || !password) {
-                loginError.textContent = 'Username dan password wajib diisi.';
+                loginError.textContent = window.t?.(
+                    'admin.login_credentials_required',
+                    'Username dan password wajib diisi.'
+                ) || 'Username dan password wajib diisi.';
                 loginError.hidden = false;
                 return;
             }
@@ -315,7 +318,10 @@
                 username !== ADMIN_USERNAME ||
                 password !== ADMIN_PASSWORD
             ) {
-                loginError.textContent = 'Username atau password salah.';
+                loginError.textContent = window.t?.(
+                    'admin.login_credentials_invalid',
+                    'Username atau password salah.'
+                ) || 'Username atau password salah.';
                 loginError.hidden = false;
                 form.elements.password.value = '';
                 form.elements.password.focus();

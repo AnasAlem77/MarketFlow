@@ -224,7 +224,48 @@
     "recent_activity": "Recent Activity",
     "views_chart": "Views Chart (Last 7 Days)",
     "logout": "Logout",
-    "welcome": "Welcome back"
+    "welcome": "Welcome back",
+    "loading": "Loading…",
+    "unavailable": "Unavailable",
+    "catalog_unavailable": "Catalog data is unavailable.",
+    "active": "Active",
+    "inactive": "Inactive"
+    ,"session_expired": "Your admin session has ended. Please sign in again."
+    ,"category_process_error": "Unable to process the category. Please try again."
+    ,"category_search_empty": "No categories match this search."
+    ,"category_not_found": "Category not found."
+    ,"category_fields_required": "Please complete every category field."
+    ,"category_saved": "Category saved successfully!"
+    ,"category_deactivate_linked": "Category \"{name}\" has {count} products. The products will remain linked, but the category will no longer appear on the public site. Continue?"
+    ,"category_deactivate_confirm": "Are you sure you want to deactivate category \"{name}\"?"
+    ,"category_deactivated": "Category deactivated successfully!"
+    ,"select_category": "Please select a category."
+    ,"select_category_option": "Select a Category"
+    ,"unnamed": "Unnamed"
+    ,"categories_load_failed": "Unable to load categories"
+    ,"image_format_invalid": "Unsupported image format. Use JPG, PNG, WEBP, or GIF."
+    ,"image_too_large": "Image is too large. Maximum size is 4MB."
+    ,"image_read_failed": "Unable to read the image."
+    ,"product_name_required": "Product name is required."
+    ,"product_price_invalid": "Product price is invalid."
+    ,"shopee_link_required": "Shopee link is required."
+    ,"saving": "Saving..."
+    ,"uploading_image": "Uploading image..."
+    ,"saving_product": "Saving product..."
+    ,"product_updated": "Product updated successfully!"
+    ,"product_added": "Product added successfully!"
+    ,"product_save_failed": "Unable to save product"
+    ,"product_deleted": "Product deleted successfully!"
+    ,"product_delete_failed": "Unable to delete product"
+    ,"products_load_failed": "Unable to load products"
+    ,"product_not_found": "Product not found."
+    ,"image_upload_url_missing": "The server did not return image upload URLs."
+    ,"image_upload_failed": "Unable to upload the image to Cloudflare R2."
+    ,"reset_stats_confirm": "Are you sure you want to reset all statistics? This action cannot be undone."
+    ,"reset_stats_failed": "Unable to reset statistics."
+    ,"reset_stats_success": "Statistics reset successfully!"
+    ,"login_credentials_required": "Username and password are required."
+    ,"login_credentials_invalid": "Incorrect username or password."
   },
   "misc": {
     "loading": "Loading...",

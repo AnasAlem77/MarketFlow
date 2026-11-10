@@ -380,6 +380,19 @@
             <!-- =========================
                  PRODUCTS TABLE
             ========================== -->
+            <div class="admin-list-toolbar">
+                <label class="sr-only" for="productSearchInput">
+                    Cari produk berdasarkan nama
+                </label>
+                <input
+                    type="search"
+                    id="productSearchInput"
+                    class="admin-list-search"
+                    placeholder="Cari nama produk..."
+                    autocomplete="off"
+                >
+            </div>
+
             <div class="table-responsive">
 
                 <table class="admin-table">
@@ -495,6 +508,10 @@
         let categories = [];
         let isSaving = false;
 
+        function adminMessage(key, fallback) {
+            return window.MarketFlowLanguage?.t(key, fallback) || fallback;
+        }
+
 
         // -----------------------------------------------------
         // DOM READY
@@ -506,6 +523,13 @@
 
                 await loadCategories();
                 await loadProducts();
+
+                const productSearchInput =
+                    document.getElementById('productSearchInput');
+
+                if (productSearchInput) {
+                    productSearchInput.addEventListener('input', renderProducts);
+                }
 
                 const urlParams =
                     new URLSearchParams(
@@ -654,7 +678,7 @@
                 }
 
                 select.innerHTML =
-                    '<option value="">Pilih Kategori</option>';
+                        `<option value="">${adminMessage('admin.select_category_option', 'Pilih Kategori')}</option>`;
 
                 categories.forEach(
                     function (category) {
@@ -677,7 +701,7 @@
                         option.textContent =
                             category.name_id ||
                             category.name_en ||
-                            'Tanpa Nama';
+                            adminMessage('admin.unnamed', 'Tanpa Nama');
 
                         select.appendChild(
                             option
@@ -701,12 +725,12 @@
                 if (select) {
 
                     select.innerHTML =
-                        '<option value="">Gagal memuat kategori</option>';
+                        `<option value="">${adminMessage('admin.categories_load_failed', 'Gagal memuat kategori')}</option>`;
 
                 }
 
                 alert(
-                    'Gagal memuat kategori: ' +
+                    `${adminMessage('admin.categories_load_failed', 'Gagal memuat kategori')}: ` +
                     error.message
                 );
 
@@ -745,7 +769,7 @@
                 renderProducts();
 
                 alert(
-                    'Gagal memuat produk: ' +
+                    `${adminMessage('admin.products_load_failed', 'Gagal memuat produk')}: ` +
                     error.message
                 );
 
@@ -771,7 +795,15 @@
 
             tbody.innerHTML = '';
 
-            if (products.length === 0) {
+            const searchQuery = normalizeAdminSearch(
+                document.getElementById('productSearchInput')?.value
+            );
+            const visibleProducts = products.filter(function (product) {
+                return !searchQuery || normalizeAdminSearch(product?.name)
+                    .includes(searchQuery);
+            });
+
+            if (visibleProducts.length === 0) {
 
                 tbody.innerHTML = `
                     <tr>
@@ -782,9 +814,9 @@
                                 padding: 40px;
                             "
                         >
-                            Belum ada produk.
-                            Klik "Tambah Produk"
-                            untuk menambahkan.
+                            ${searchQuery
+                                ? 'Produk tidak ditemukan untuk pencarian ini.'
+                                : 'Belum ada produk. Klik "Tambah Produk" untuk menambahkan.'}
                         </td>
                     </tr>
                 `;
@@ -793,7 +825,7 @@
 
             }
 
-            products.forEach(
+            visibleProducts.forEach(
                 function (product) {
 
                     const category =
@@ -947,6 +979,16 @@
         }
 
 
+        function normalizeAdminSearch(value) {
+            return String(value ?? '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, ' ');
+        }
+
+
         // -----------------------------------------------------
         // SHOW ADD FORM
         // -----------------------------------------------------
@@ -1061,7 +1103,7 @@
             if (!product) {
 
                 alert(
-                    'Produk tidak ditemukan.'
+                    adminMessage('admin.product_not_found', 'Produk tidak ditemukan.')
                 );
 
                 return;
@@ -1236,7 +1278,7 @@
             ) {
 
                 alert(
-                    'Format gambar tidak didukung. Gunakan JPG, PNG, WEBP, atau GIF.'
+                    adminMessage('admin.image_format_invalid', 'Format gambar tidak didukung. Gunakan JPG, PNG, WEBP, atau GIF.')
                 );
 
                 input.value = '';
@@ -1251,7 +1293,7 @@
             if (file.size > maxSize) {
 
                 alert(
-                    'Ukuran gambar terlalu besar. Maksimal 4MB.'
+                    adminMessage('admin.image_too_large', 'Ukuran gambar terlalu besar. Maksimal 4MB.')
                 );
 
                 input.value = '';
@@ -1284,7 +1326,7 @@
                 function () {
 
                     alert(
-                        'Gagal membaca gambar.'
+                        adminMessage('admin.image_read_failed', 'Gagal membaca gambar.')
                     );
 
                 };
@@ -1328,13 +1370,13 @@
             ];
 
             if (!allowedTypes.includes(file.type)) {
-                throw new Error('Format gambar tidak didukung.');
+                throw new Error(adminMessage('admin.image_format_invalid', 'Format gambar tidak didukung. Gunakan JPG, PNG, WEBP, atau GIF.'));
             }
 
             const maxSize = 4 * 1024 * 1024;
 
             if (file.size > maxSize) {
-                throw new Error('Ukuran gambar terlalu besar. Maksimal 4MB.');
+                throw new Error(adminMessage('admin.image_too_large', 'Ukuran gambar terlalu besar. Maksimal 4MB.'));
             }
 
             const data = await fetchJson(
@@ -1351,7 +1393,7 @@
 
             if (!data.uploadUrl || !data.publicUrl) {
                 throw new Error(
-                    'Server tidak mengembalikan URL upload gambar.'
+                    adminMessage('admin.image_upload_url_missing', 'Server tidak mengembalikan URL upload gambar.')
                 );
             }
 
@@ -1368,7 +1410,7 @@
 
             if (!uploadResponse.ok) {
                 throw new Error(
-                    'Gagal mengupload gambar ke Cloudflare R2.'
+                    adminMessage('admin.image_upload_failed', 'Gagal mengupload gambar ke Cloudflare R2.')
                 );
             }
 
@@ -1445,7 +1487,7 @@
             if (!name) {
 
                 alert(
-                    'Nama produk wajib diisi.'
+                    adminMessage('admin.product_name_required', 'Nama produk wajib diisi.')
                 );
 
                 return;
@@ -1458,7 +1500,7 @@
             ) {
 
                 alert(
-                    'Harga produk tidak valid.'
+                    adminMessage('admin.product_price_invalid', 'Harga produk tidak valid.')
                 );
 
                 return;
@@ -1471,7 +1513,7 @@
             ) {
 
                 alert(
-                    'Silakan pilih kategori.'
+                    adminMessage('admin.select_category', 'Silakan pilih kategori.')
                 );
 
                 return;
@@ -1481,7 +1523,7 @@
             if (!shopee_link) {
 
                 alert(
-                    'Link Shopee wajib diisi.'
+                    adminMessage('admin.shopee_link_required', 'Link Shopee wajib diisi.')
                 );
 
                 return;
@@ -1510,7 +1552,7 @@
                 saveButton.disabled = true;
 
                 saveButton.innerHTML =
-                    '⏳ Menyimpan...';
+                    `⏳ ${adminMessage('admin.saving', 'Menyimpan...')}`;
 
             }
 
@@ -1533,7 +1575,7 @@
                     if (saveButton) {
 
                         saveButton.innerHTML =
-                            '⏳ Upload gambar...';
+                            `⏳ ${adminMessage('admin.uploading_image', 'Upload gambar...')}`;
 
                     }
 
@@ -1614,7 +1656,7 @@
                 if (saveButton) {
 
                     saveButton.innerHTML =
-                        '⏳ Simpan produk...';
+                        `⏳ ${adminMessage('admin.saving_product', 'Simpan produk...')}`;
 
                 }
 
@@ -1685,8 +1727,8 @@
 
                 alert(
                     id
-                        ? '✅ Produk berhasil diperbarui!'
-                        : '✅ Produk berhasil ditambahkan!'
+                        ? `✅ ${adminMessage('admin.product_updated', 'Produk berhasil diperbarui!')}`
+                        : `✅ ${adminMessage('admin.product_added', 'Produk berhasil ditambahkan!')}`
                 );
 
 
@@ -1698,7 +1740,7 @@
                 );
 
                 alert(
-                    'Gagal menyimpan produk: ' +
+                    `${adminMessage('admin.product_save_failed', 'Gagal menyimpan produk')}: ` +
                     error.message
                 );
 
@@ -1826,7 +1868,7 @@
                 await loadProducts();
 
                 alert(
-                    '🗑️ Produk berhasil dihapus!'
+                    `🗑️ ${adminMessage('admin.product_deleted', 'Produk berhasil dihapus!')}`
                 );
 
             } catch (error) {
@@ -1837,7 +1879,7 @@
                 );
 
                 alert(
-                    'Gagal menghapus produk: ' +
+                    `${adminMessage('admin.product_delete_failed', 'Gagal menghapus produk')}: ` +
                     error.message
                 );
 
